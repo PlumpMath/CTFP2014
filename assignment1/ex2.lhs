@@ -17,7 +17,7 @@ Laws:
 >   {  identity  :: a
 >   ,  (<>)      :: a -> a -> a
 >   }
->
+
 > fold :: Monoid a -> [a] -> a
 > fold  Monoid{..}  []        = identity
 > fold  Monoid{..}  (x : xs)  = x <> fold Monoid{..} xs
@@ -30,13 +30,17 @@ an identity.
 >   |  Bot
 >   |  Z Integer
 >   deriving (Eq, Ord, Show, Read)
->
+
+%if False
+Here just so we can use literals...
+
 > instance Num Number where
 >   fromInteger = Z
 >
 >   negate (Z n) = Z (-n)
 >   negate _     = error "Number: Can't negate infinities"
->
+%endif
+
 > _Min :: Monoid Number
 > _Min = Monoid
 >   {  identity = Top
@@ -47,7 +51,7 @@ an identity.
 >        (_,   Bot)  -> Bot
 >        (Z x, Z y)  -> Z (min x y)
 >   }
->
+
 > _Max :: Monoid Number
 > _Max = Monoid
 >   {  identity = Bot
@@ -59,7 +63,6 @@ an identity.
 >        (Z x, Z y)  -> Z (max x y)
 >   }
 
-Lemmas
 
 > minimax :: [[Number]] -> Number
 
@@ -72,9 +75,6 @@ Lemmas
 < help1 a xs = a `min` fold _Max xs
 < help1 a xs = fold _Max (map (min a) xs)
 
-> help1 a xs = foldl (help2 a) Bot xs
-
-> help2 :: Number -> Number -> Number -> Number
-> help2 a b c = b `max` (a `min` c)
+> help1 a xs = foldl (\b c -> b `max` (a `min` c)) Bot xs
 
 \end{document}
