@@ -1,3 +1,5 @@
+all : $(patsubst %.lhs,%.pdf,$(wildcard *.lhs))
+
 %.tex: %.lhs
 	lhs2TeX -o $@ $?
 
