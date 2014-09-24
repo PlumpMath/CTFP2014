@@ -1,5 +1,8 @@
 \documentclass{article}
 %include polycode.fmt
+%format ostar = "\oast "
+%format oplus = "\oplus "
+%format * = "\cdot "
 
 \begin{document}
 \section{Max Rectangle}
@@ -8,6 +11,7 @@
 
 > module MaxRectangle where
 
+> import qualified Prelude
 > import Prelude hiding (Left, map)
 
 > class Binoid a where
@@ -72,4 +76,51 @@ Satisfies
 > reduce f g (Singleton a) = a
 > reduce f g (Above x y)   = reduce f g x `f` reduce f g y
 > reduce f g (Beside x y)  = reduce f g x `g` reduce f g y
+
+> -- See lecture notes 1.9 Segments
+> segs :: Array a -> [Array a]
+> segs = undefined
+
+> -- See lecture notes 4.6 Zip
+> rows :: Array a -> [Array a]
+> rows = undefined
+
+> -- See lecture notes 4.7 Directed reductions (⤈)
+> directedReduce :: (a -> a -> a) -> Array a -> Array a
+> directedReduce = undefined
+
+> -- See lecture notes 4.8 Accumulations (⇟)
+> accumulate :: (a -> a -> a) -> Array a -> Array a
+> accumulate = undefined
+
+> -- See lecture notes 4.11 Rectangles
+> vsegs :: Array a -> [Array a]
+> vsegs = undefined
+
+> -- See lecture notes 4.11 Rectangles
+> rects :: Array a -> [Array a]
+> rects = undefined
+
+> -- See lecture notes 4.14 Application
+> area :: Array a -> Int
+> area = reduce (+) (+) . map (const 1)
+
+> -- See lecture notes 4.14 Application
+> filled :: Array Int -> Bool
+> filled = reduce (&&) (&&) . map (== 1)
+
+> -- See lecture notes 4.14 Application (R)
+> r, r' :: Array Int -> Int
+> r  = foldl max 0 . Prelude.map area . filter filled . rects
+> r' = foldl max 0 . Prelude.map h . rows . accumulate ostar
+>   where
+>     h = foldl max 0 . Prelude.map f . segs
+>     f x = width x * reduce min min x
+
+>     oplus 0 _ = 0
+>     oplus _ 0 = 0
+>     oplus a b = a + b
+
+>     ostar :: Int -> Int -> Int
+>     ostar a b = max (a `oplus` b) b
 \end{document}
