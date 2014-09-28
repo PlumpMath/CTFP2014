@@ -133,17 +133,68 @@ Satisfies
 \begin{lemma}[Rectangle decomposition]
 If for some |g|, |ostar|
 
-< reduce oplus oplus . map f . bottoms = g . directedReduce ostar
+< reduce (oplus) (oplus) . map f . bottoms = g . directedReduce (ostar)
 
 then
 
-< reduce oplus oplus . map f . rects = reduce oplus oplus . map h . rows . accumulate ostar
+< reduce (oplus) (oplus) . map f . rects =
+<    reduce (oplus) (oplus) . map h . rows . accumulate (ostar)
 <   where
-<     h = reduce oplus oplus . map g . vsegs
+<     h = reduce (oplus) (oplus) . map g . vsegs
 \end{lemma}
 
+\def\commentbegin{\quad\{\ }
+\def\commentend{\}}
 \begin{proof}
-missing
+We shall need the following observation about |rects|:
+\begin{spec}
+  rects
+= {- one definition of rects -}
+  reduce Above Beside . map vsegs .  hsegs
+= {- definition of hsegs -}
+  reduce Above Beside . map vsegs . reduce Above Beside . map bottoms . tops
+= {- map and reduce promotion -}
+  reduce Above Beside . map (reduce Above Beside . map vsegs . bottoms) . tops
+= {- BRTL rule -}
+  reduce Above Beside . map (reduce Above Beside . map bottoms . vsegs) . tops
+\end{spec}
+
+Now we argue:
+\begin{spec}
+  reduce (oplus) (oplus) . map f . rects
+= {- previous observation -}
+  reduce (oplus) (oplus) . map f .  reduce Above Beside
+      . map (reduce Above Beside . map bottoms . vsegs) . tops
+= {- map and reduce promotion -}
+  reduce (oplus) (oplus)
+      . map  (reduce (oplus) (oplus) . map f
+             . reduce Above Beside . map bottoms . vsegs)
+      . tops
+= {- promotion rules -}
+  reduce (oplus) (oplus)
+      . map  (reduce (oplus) (oplus)
+             . map (reduce (oplus) (oplus) . map f . bottoms)
+             . vsegs)
+      . tops
+= {- assumption -}
+  reduce (oplus) (oplus)
+      . map (reduce (oplus) (oplus) . map (g . directedReduce (ostar)) . vsegs)
+      . tops
+= {- map distributivity -}
+  reduce (oplus) (oplus)
+      . map (reduce (oplus) (oplus) . map g . map (directedReduce (ostar)) . vsegs)
+      . tops
+= {- orthogonal reduction rule -}
+  reduce (oplus) (oplus)
+      . map (reduce (oplus) (oplus) . map g . vsegs . directedReduce (ostar))
+      . tops
+= {- map distributivity; |h = reduce oplus oplus . map g . vsegs| -}
+  reduce (oplus) (oplus) . map h . map (directedReduce (ostar)) . tops
+= {- accumulation lemma -}
+  reduce (oplus) (oplus) . map h . rows . accumulate (ostar)
+\end{spec}
+
+
 \end{proof}
 
 
