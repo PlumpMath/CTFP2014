@@ -3,6 +3,7 @@
 %format ostar = "\oast "
 %format oplus = "\oplus "
 %format * = "\cdot "
+%format theta = "\theta"
 
 \usepackage{amsthm}
 \newtheorem{lemma}{Lemma}
@@ -213,8 +214,60 @@ missing
 >     ostar :: Int -> Int -> Int
 >     ostar a b = max (a `oplus` b) b
 
+\begin{lemma}[BRTL rule]
+\label{lem:brtl}
+We will prove that
+
+< reduce Above Beside . map vsegs . bottoms =
+<    reduce Above Beside . map bottoms . vsegs
+
+\begin{proof}
+
+\def\commentbegin{\quad\{\ }
+\def\commentend{\}}
+
+We introduce the abbreviations |theta = reduce Above Beside|, |V = vsegs| and |B = bottoms|.
+We observe that |theta . map B . lefts = theta . map lefts . B| and
+|theta . map B . rights = theta . map rights . B|.
+
+Now we argue:
+
+\begin{spec}
+  theta . map V . B
+= {- definition of |vsegs| -}
+  theta . map (theta . map rights . lefts) . B
+= {- map distributivity -}
+  theta . map theta . map (map rights) . map lefts . B
+= {- reduce/reduce promotion -}
+  theta . theta . map (map rights) . map lefts . B
+= {- map and reduce promotion -}
+  theta . map rights . theta . map lefts . B
+= {- observation -}
+  theta . map rights . theta . map B . lefts
+= {- map and reduce promotion -}
+  theta . theta . map (map rights) . map B . lefts
+= {- reduce/reduce promotion -}
+  theta . map theta . map (map rights) . map B . lefts
+= {- map distributivity -}
+  theta . map (theta . map rights . B) . lefts
+= {- observation -}
+  theta . map (theta . map B . rights) . lefts
+= {- map distributivity -}
+  theta . map theta . map (map B) . map rights . lefts
+= {- reduce/reduce promotion -}
+  theta . theta . map (map B) . map rights . lefts
+= {- map and reduce promotion -}
+  theta . map B . theta . map rights . lefts
+= {- definition of |vsegs| -}
+  theta . map B . vsegs
+\end{spec}
+
+\end{proof}
+
+\end{lemma}
 
 \begin{lemma}[Rectangle decomposition]
+\label{lem:rectangle-decomposition}
 If for some |g|, |ostar|
 
 < reduce (oplus) (oplus) . map f . bottoms = g . directedReduce (ostar)
@@ -227,19 +280,21 @@ then
 <     h = reduce (oplus) (oplus) . map g . vsegs
 \end{lemma}
 
+\begin{proof}
+
 \def\commentbegin{\quad\{\ }
 \def\commentend{\}}
-\begin{proof}
+
 We shall need the following observation about |rects|:
 \begin{spec}
   rects
-= {- one definition of rects -}
+= {- one definition of |rects| -}
   reduce Above Beside . map vsegs .  hsegs
-= {- definition of hsegs -}
+= {- definition of |hsegs| -}
   reduce Above Beside . map vsegs . reduce Above Beside . map bottoms . tops
 = {- map and reduce promotion -}
   reduce Above Beside . map (reduce Above Beside . map vsegs . bottoms) . tops
-= {- BRTL rule -}
+= {- BRTL rule (Lemma~\ref{lem:brtl}) -}
   reduce Above Beside . map (reduce Above Beside . map bottoms . vsegs) . tops
 \end{spec}
 
