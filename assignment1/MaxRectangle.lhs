@@ -87,16 +87,100 @@ Satisfies
 > segs = undefined
 
 > -- See lecture notes 4.6 Zip
+> -- NB: I think it might be Array (Array) whilst listrows and listcols do produce lists
 > rows :: Array a -> [Array a]
 > rows = undefined
 
-> -- See lecture notes 4.7 Directed reductions (⤈)
-> directedReduce :: (a -> a -> a) -> Array a -> Array a
-> directedReduce = undefined
+> cols :: Array a -> Array (Array a)
+> cols = undefined
 
-> -- See lecture notes 4.8 Accumulations (⇟)
-> accumulate :: (a -> a -> a) -> Array a -> Array a
-> accumulate = undefined
+> listrows :: Array a -> [[a]]
+> listrows = undefined
+
+> listcols :: Array a -> [[a]]
+> listcols = undefined
+
+
+> -- See lecture notes 4.7 Directed reductions (⤈)   TODO: name changes where appropriate
+>
+> singleExtract :: Array a -> a
+> singleExtract (Singleton x) = x
+
+> columnReduce :: (a -> a -> a) -> Array a -> Array a
+> columnReduce f (Singleton z)             = Singleton z
+> columnReduce f (Above x (Singleton y))   = Singleton $ singleExtract (columnReduce f x) `f` y
+> columnReduce f (Beside x y)              = Beside    (columnReduce f x) (columnReduce f y)
+
+> rowReduce :: (a -> a -> a) -> Array a -> Array a
+> rowReduce f (Singleton z)            = Singleton z
+> rowReduce f (Beside x (Singleton y)) = Singleton $ singleExtract (rowReduce f x) `f` y
+> rowReduce f (Above x y)              = Above (rowReduce f x) (rowReduce f y)
+
+Satisfy
+< rows == rowReduce Beside . map Singleton
+< cols == columnReduce Above . map Singleton
+
+
+> -- See lecture notes 4.8 Accumulations (⇟)    TODO: name changes where appropriate
+
+Considering the array element selectors/extractors
+< bottomleft :: Array a -> a
+< bottomleft = reduce right left
+
+< topright :: Array a -> a
+< topright = reduce left right
+
+We define
+> accumulateCols :: (a -> a -> a) -> Array a -> Array a
+> accumulateCols f (Singleton z) = Singleton z
+> accumulateCols f (Above x (Singleton y)) = Above xs (Singleton (f (bottomleft xs) y))
+>   where xs = accumulateCols f x
+> accumulateCols f (Beside x y) = Beside (accumulateCols f x) (accumulateCols f y)
+
+> accumulateRows :: (a -> a -> a) -> Array a -> Array a
+> accumulateRows f (Singleton z) = Singleton z
+> accumulateRows f (Beside x (Singleton y)) = Beside xs (Singleton (f (topright xs) y))
+>   where xs = accumulateRows f x
+> accumulateRows f (Above x y) = Beside (accumulateRows f x) (accumulateRows f y)
+
+Satisfying
+< listrows . (accumulateRows f) == map (scanl f) . listrows
+< listcols . (accumulateCols f) == map (scanl f) . listcols
+
+
+> -- See lecture notes 4.9 Tops and bottoms
+
+In a similar fashion to tails and inits
+> lefts :: Array a -> Array (Array a)
+> lefts = accumulateRows Beside . cols
+
+> tops :: Array a -> Array (Array a)
+> tops = accumulateCols Above . rows
+
+\begin{lemma}[Accumulation lemma]
+
+< map (columnReduce f) . tops  = rows . accumulateCols f
+
+< map (rowReduce f)    . lefts = cols . accumulateRows f
+
+\end{lemma}
+
+\begin{proof}
+Given the orthogonal reduction rules
+< map (columnReduce f) . lefts = lefts . columnReduce f
+< map (rowReduce f)    . tops  = tops  . rowReduce f
+
+and the orthogonal accumulation rules
+< map (accumulateCols f) . lefts = lefts . accumulateCols f
+< map (accumulateRows f) . tops  = tops  . accumulateRows f
+
+We obtain
+\begin{spec}
+missing
+\end{spec}
+
+\end{proof}
+
 
 > -- See lecture notes 4.11 Rectangles
 > vsegs :: Array a -> [Array a]
