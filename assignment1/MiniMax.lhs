@@ -110,7 +110,7 @@ for a tree |t|:
 
 The last equation can now be simplified using the laws
 
-< -1 * (a `max` b)    =  neg a `min` neg b
+< neg (a `max` b)    =  neg a `min` neg b
 < a `max` (b `min`c)  =  (a `max` b) `min` (a `max` c)
 
 We obtain
