@@ -210,11 +210,11 @@ missing
 >   where
 >     h = foldl max 0 . Prelude.map f . segs
 >     f x = width x * reduce min min x
-
+>
 >     oplus 0 _ = 0
 >     oplus _ 0 = 0
 >     oplus a b = a + b
-
+>
 >     ostar :: Int -> Int -> Int
 >     ostar a b = max (a `oplus` b) b
 
