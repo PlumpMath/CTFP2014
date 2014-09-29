@@ -342,7 +342,6 @@ Another way:
 >     oplus _ 0 = 0
 >     oplus a b = a + b
 >
->     ostar :: Int -> Int -> Int
 >     ostar a b = max (a `oplus` b) b
 
 \begin{lemma}[BRTL rule]
