@@ -467,7 +467,7 @@ Now we argue:
 \end{proof}
 
 
-\begin{lemma}\hfill
+\begin{lemma}\label{lem:a}\hfill
 < reduce max max . map (reduce oplus oplus) . bottoms
 
 can be expressed as
@@ -489,7 +489,7 @@ can be expressed as
 \end{corollary}
 
 \begin{proof}
-Apply Lemma 1 to Lemma 2.
+Apply Lemma~\ref{lem:rectangle-decomposition} to Lemma~\ref{lem:a}.
 \end{proof}
 
 
