@@ -18,7 +18,7 @@
 > module MaxRectangle where
 
 > import qualified Prelude
-> import Prelude hiding (Left, map)
+> import Prelude hiding (Left, map, zipWith)
 
 > class Binoid a where
 >   (+^) :: a -> a -> a
@@ -82,6 +82,11 @@ Satisfies
 > reduce f g (Singleton a) = a
 > reduce f g (Above x y)   = reduce f g x `f` reduce f g y
 > reduce f g (Beside x y)  = reduce f g x `g` reduce f g y
+
+> zipWith :: (a -> a -> a) -> Array a -> Array a -> Array a
+> zipWith op (Singleton a) (Singleton b)  = Singleton $ a `op` b
+> zipWith op (Above x y)   (Above x' y')  = zipWith op x y `Above`  zipWith op x' y'
+> zipWith op (Beside x y)  (Beside x' y') = zipWith op x y `Beside` zipWith op x' y'
 
 > -- See lecture notes 1.9 Segments
 > segs :: Array a -> [Array a]
