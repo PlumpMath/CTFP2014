@@ -2,6 +2,7 @@
 %include polycode.fmt
 %format ostar = "\oast "
 %format oplus = "\oplus "
+%format otimes = "\otimes "
 %format * = "\cdot "
 %format theta = "\theta"
 
@@ -78,10 +79,19 @@ Satisfies
 > map f (Above x y)   = map f x `Above` map f y
 > map f (Beside x y)  = map f x `Beside` map f y
 
+so that (map distributivity)
+
+< map (f . g) = map f . map g
+
 > reduce :: (a -> a -> a) -> (a -> a -> a) -> Array a -> a
 > reduce f g (Singleton a) = a
 > reduce f g (Above x y)   = reduce f g x `f` reduce f g y
 > reduce f g (Beside x y)  = reduce f g x `g` reduce f g y
+
+so that (join rules)
+
+< map f . reduce (|-|) (|||) = reduce (|-|) (|||) . map (map f)
+< reduce oplus otimes reduce (|-|) (|||) = reduce oplus otimes . map (reduce oplus otimes)
 
 > zipWith :: (a -> a -> a) -> Array a -> Array a -> Array a
 > zipWith op (Singleton a) (Singleton b)  = Singleton $ a `op` b
@@ -333,7 +343,7 @@ Now we argue:
       . map  (reduce (oplus) (oplus) . map f
              . reduce Above Beside . map bottoms . vsegs)
       . tops
-= {- promotion rules -}
+= {- join rules and map distributivity -}
   reduce (oplus) (oplus)
       . map  (reduce (oplus) (oplus)
              . map (reduce (oplus) (oplus) . map f . bottoms)
