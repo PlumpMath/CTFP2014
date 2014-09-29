@@ -3,6 +3,9 @@ all : $(patsubst %.lhs,%.pdf,$(wildcard *.lhs))
 %.tex: %.lhs
 	lhs2TeX -o $@ $?
 
+%.tex: %.lagda
+	agda -i. --latex --latex-dir=. $?
+
 %.pdf: %.tex
 	pdflatex $?
 
