@@ -3,4 +3,5 @@
 *.dvi
 *.aux
 *.log
+*.out
 *.agdai
