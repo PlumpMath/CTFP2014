@@ -8,9 +8,9 @@
 Laws:
 
 \begin{itemize}
-\item $identity <> x = x$
-\item $x <> identity = x$
-\item $x <> (y <> z) = (x <> y) <> z$
+\item |identity <> x = x|
+\item |x <> identity = x|
+\item |x <> (y <> z) = (x <> y) <> z|
 \end{itemize}
 
 > data Monoid a = Monoid
@@ -32,6 +32,7 @@ an identity.
 >   deriving (Eq, Ord, Show, Read)
 
 %if False
+
 Here just so we can use literals...
 
 > instance Num Number where
@@ -39,6 +40,7 @@ Here just so we can use literals...
 >
 >   negate (Z n) = Z (-n)
 >   negate _     = error "Number: Can't negate infinities"
+
 %endif
 
 > _Min :: Monoid Number
@@ -64,18 +66,16 @@ Here just so we can use literals...
 >   }
 
 
-> minimax :: [[Number]] -> Number
-
+< minimax :: [[Number]] -> Number
 < minimax = fold _Min . map (fold _Max)
 
-> minimax = foldl help1 Top
+< minimax = foldl help1 Top
 
-> help1 :: Number -> [Number] -> Number
-
+< help1 :: Number -> [Number] -> Number
 < help1 a xs = a `min` fold _Max xs
-< help1 a xs = fold _Max (map (min a) xs)
 
-> help1 a xs = foldl (\b c -> b `max` (a `min` c)) Bot xs
+< help1 a xs = fold _Max (map (min a) xs)
+< help1 a xs = foldl (\b c -> b `max` (a `min` c)) Bot xs
 
 \section{The alpha-beta algorithm}
 
@@ -83,104 +83,122 @@ We now generalise the minimax problem to trees. Consider the data-type
 
 > data Tree = Tip Number | Fork [Tree]
 
-We wish to calculate an efficient algorithm for computing a function $|eval|$ as follows:
+We wish to calculate an efficient algorithm for computing a function
+|eval| as follows:
 
-> eval :: Tree -> Number
-> eval (Tip n)    =  n
-> eval (Fork ts)  =  fold _Max (map (neg eval) ts)
-
-where
-
-> neg :: (a -> Number) -> a -> Number
-> neg f e = -1 * (f e)
-
-Using the specialisation lemma on the right-hand side of the second equation for $|eval|$, we obtain
-
-> eval (Fork ts)  =  foldl help1 Bot ts
+< eval :: Tree -> Number
+< eval (Tip n)    =  n
+< eval (Fork ts)  =  fold _Max (map (neg eval) ts)
 
 where
 
-> help1 :: Number -> Tree -> Number
-> help1 a t  =  a `max` (neg eval) t
+< neg :: (a -> Number) -> a -> Number
+< neg f e = -1 * (f e)
 
-We now expand this last equation by considering the two possible forms for a tree $|t|$:
+Using the specialisation lemma on the right-hand side of the second
+equation for |eval|, we obtain
 
-> help1 a (Tip n)    =  a `max` (-1 * n)
-> help1 a (Fork ts)  =  a `max` (-1 * (fold _Max (map (neg eval) ts)))
+< eval (Fork ts)  =  foldl help1 Bot ts
+
+where
+
+< help1 :: Number -> Tree -> Number
+< help1 a t  =  a `max` (neg eval) t
+
+We now expand this last equation by considering the two possible forms
+for a tree |t|:
+
+< help1 a (Tip n)    =  a `max` (-1 * n)
+< help1 a (Fork ts)  =  a `max` (-1 * (fold _Max (map (neg eval) ts)))
 
 The last equation can now be simplified using the laws
 
-> -1 * (a `max` b)   =  (-1 * a) `min` (-1 * b)
-> a `max` (b `min`c)  =  (a `max` b) `min` (a `max` c)
+< -1 * (a `max` b)    =  (-1 * a) `min` (-1 * b)
+< a `max` (b `min`c)  =  (a `max` b) `min` (a `max` c)
 
 We obtain
 
-> help1 a (Fork ts)  = fold _Min (map (max a) (map eval ts))
+< help1 a (Fork ts)  = fold _Min (map (max a) (map eval ts))
 
-After using the $|map|$ distributivity law, the right-hand side of this equation is also a candidate for specialisation. We have
+After using the |map| distributivity law, the right-hand side of this
+equation is also a candidate for specialisation. We have
 
-> help1 a (Fork ts)  = foldl (help2 a) Top ts
+< help1 a (Fork ts)  = foldl (help2 a) Top ts
 
 where
 
-> help2 :: Number -> Number -> Tree -> Number
-> help2 a b t  =  b `min` (a `max` eval t)
+< help2 :: Number -> Number -> Tree -> Number
+< help2 a b t  =  b `min` (a `max` eval t)
 
 Furthermore, since
 
-> eval t  =  Top `min` (Bot `max` eval t)
->         =  Top (help2 Bot) t
+< eval t  =  Top `min` (Bot `max` eval t)
+<         =  Top (help2 Bot) t
 
-We have, without iventiveness, reduced the problem of calculating $|eval t|$ to that of evaluationg $|help2 a b t|$  for values of $|a|$ and $|b|$.
-Let us now expand the definition of $|help2 a b t|$ in a similar way as we did for $|help1 a t|$. We obtain
+We have, without iventiveness, reduced the problem of calculating |eval
+t| to that of evaluationg |help2 a b t| for values of |a| and
+|b|.
 
-> help2 a b (Tip n)    =  b `min` (a `max` n)
-> help2 a b (Fork ts)  =  b `min` (a `max` (fold _Max (map (neg eval) ts)))
+Let us now expand the definition of |help2 a b t| in a similar way as
+we did for |help1 a t|. We obtain
 
-In order to simplify the right-hand side of this last equation, we need the dual-distributive law
+< help2 a b (Tip n)    =  b `min` (a `max` n)
+< help2 a b (Fork ts)  =  b `min` (a `max` (fold _Max (map (neg eval) ts)))
 
-> b `min` (a `max` c) = (b `min` a)  `max` (b `min` c)
+In order to simplify the right-hand side of this last equation, we need
+the dual-distributive law
 
-and the fact that evaluation of $|help2 a b t|$ is required only for values of $|a|$ and $|b|$ satisfying $|a = a `min` b|$, in other words, for $a \leq b$.
-In such case we have
+< b `min` (a `max` c) = (b `min` a)  `max` (b `min` c)
 
-> b `min` (a `max` c) = a  `max` (b `min` c)
+and the fact that evaluation of |help2 a b t| is required only for
+values of |a| and |b| satisfying |a = a `min` b|, in other words,
+for $a \leq b$.  In such case we have
 
-by commutativity of $|min|$.
+< b `min` (a `max` c) = a  `max` (b `min` c)
+
+by commutativity of |min|.
 We then obtain
 
-> help2 a b (Fork ts)  = 
->   a `max` (fold _Max (map (min b) (map (neg eval) ts)))
+< help2 a b (Fork ts)  =
+<   a `max` (fold _Max (map (min b) (map (neg eval) ts)))
 
 Using specialisation yet a third time, we obtain
 
-> help2 a b (Fork ts) = foldl (help3 b) a ts
+< help2 a b (Fork ts) = foldl (help3 b) a ts
 
 where
 
-> help3 :: Number -> Number -> Tree -> Number
-> help3 b a t  =  a `max` (b `min` (neg eval) t)
+< help3 :: Number -> Number -> Tree -> Number
+< help3 b a t  =  a `max` (b `min` (neg eval) t)
 
-At this point, the seemingly endless succession of expansion and specialisation steps can be stopped.
-A short calculation using the given properties of $|-|$, $|min|$ and $|max|$ yields
+At this point, the seemingly endless succession of expansion and
+specialisation steps can be stopped.  A short calculation using the
+given properties of |-|, |min| and |max| yields
 
-> help3 b a t  =  -1 * (help2 (-1 * b) (-1 * a) t)
+< help3 b a t  =  -1 * (help2 (-1 * b) (-1 * a) t)
 
 Putting everything together, we now have
 
-> eval t               =  help2 Bot Top t
+> eval :: Tree -> Number
+> eval t =  help2 Bot Top t
+>
+> help2 :: Number -> Number -> Tree -> Number
 > help2 a b (Tip n)    =  b `min` (a `max` n)
 > help2 a b (Fork ts)  =  foldl (help3 b) a ts
-> help3 b a t          =  -1 * (help2 (-1 * b) (-1 * a) t)
+>
+> help3 :: Number -> Number -> Tree -> Number
+> help3 b a t =  -1 * (help2 (-1 * b) (-1 * a) t)
 
-Finally, we bring on the left-zeros (absorbing elements).
-We only need to observe that $|b|$ is a left-zero of $|help3 b|$.
-This follows from the definition of $|help3 b|$ and the absorbtive law
+Finally, we bring on the left-zeros (absorbing elements).  We only need
+to observe that |b| is a left-zero of |help3 b|.  This follows from
+the definition of |help3 b| and the absorbtive law
 
-> b `max` (b `min` x) = b
+< b `max` (b `min` x) = b
 
 Incorporating this optimisation yields the alpha-beta algorithm.
 
-The various axioms concerning $|max|$, $|min|$, $|-|$, $|Top|$ and $|Bot|$ used in the above derivation are precisely those of a boolean algebra.
+The various axioms concerning |max|, |min|, |-|, |Top| and
+|Bot| used in the above derivation are precisely those of a boolean
+algebra.
 
 \end{document}
