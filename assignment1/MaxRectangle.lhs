@@ -94,16 +94,31 @@ Satisfies
 
 > -- See lecture notes 4.6 Zip
 > rows :: Array a -> Array (Array a)
-> rows = undefined
+> rows = reduce (|-|) (zipWith (|||)) . map (lift . lift)
 
 > cols :: Array a -> Array (Array a)
-> cols = undefined
+> cols = reduce (zipWith (|-|)) (|||) . map (lift . lift)
 
 > listrows :: Array a -> [[a]]
-> listrows = undefined
+> listrows = reduce (++) (Prelude.zipWith (++)) . map (\ x -> [[x]])
 
 > listcols :: Array a -> [[a]]
-> listcols = undefined
+> listcols = reduce (Prelude.zipWith (++)) (++) . map (\ x -> [[x]])
+
+so that
+
+< height = length . listrows
+< width = length . listcols
+
+and
+
+< listcols = listrows . tr
+< listrows = listcols . tr
+
+as well as
+
+< reduce oplus otimes = fold oplus . map (fold otimes) . listrows
+< reduce oplus otimes = fold otimes . map (fold oplus) . listcols
 
 
 > -- See lecture notes 4.7 Directed reductions (⤈)   TODO: name changes where appropriate
