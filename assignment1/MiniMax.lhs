@@ -66,16 +66,16 @@ Here just so we can use literals...
 >   }
 
 
-< minimax :: [[Number]] -> Number
-< minimax = fold _Min . map (fold _Max)
+> minimax :: [[Number]] -> Number
+> minimax = fold _Min . map (fold _Max)
 
 < minimax = foldl help1 Top
 
-< help1 :: Number -> [Number] -> Number
-< help1 a xs = a `min` fold _Max xs
+> help :: Number -> [Number] -> Number
+> help a xs = a `min` fold _Max xs
 
-< help1 a xs = fold _Max (map (min a) xs)
-< help1 a xs = foldl (\b c -> b `max` (a `min` c)) Bot xs
+< help a xs = fold _Max (map (min a) xs)
+< help a xs = foldl (\b c -> b `max` (a `min` c)) Bot xs
 
 \section{The alpha-beta algorithm}
 
