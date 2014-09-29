@@ -125,11 +125,12 @@ Satisfy
 > -- See lecture notes 4.8 Accumulations (⇟)    TODO: name changes where appropriate
 
 Considering the array element selectors/extractors
-< bottomleft :: Array a -> a
-< bottomleft = reduce right left
 
-< topright :: Array a -> a
-< topright = reduce left right
+> bottomleft :: Array a -> a
+> bottomleft = reduce right left
+
+> topright :: Array a -> a
+> topright = reduce left right
 
 We define
 > accumulateCols :: (a -> a -> a) -> Array a -> Array a
