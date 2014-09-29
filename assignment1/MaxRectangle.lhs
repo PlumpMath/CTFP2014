@@ -88,8 +88,7 @@ Satisfies
 > segs = undefined
 
 > -- See lecture notes 4.6 Zip
-> -- NB: I think it might be Array (Array) whilst listrows and listcols do produce lists
-> rows :: Array a -> [Array a]
+> rows :: Array a -> Array (Array a)
 > rows = undefined
 
 > cols :: Array a -> Array (Array a)
@@ -187,11 +186,11 @@ missing
 
 
 > -- See lecture notes 4.11 Rectangles
-> vsegs :: Array a -> [Array a]
+> vsegs :: Array a -> Array (Array a)
 > vsegs = undefined
 
 > -- See lecture notes 4.11 Rectangles
-> rects :: Array a -> [Array a]
+> rects :: Array a -> Array (Array a)
 > rects = undefined
 
 > -- See lecture notes 4.14 Application
@@ -204,8 +203,10 @@ missing
 
 > -- See lecture notes 4.14 Application (R)
 > r, r' :: Array Int -> Int
-> r  = foldl max 0 . Prelude.map area . filter filled . rects
-> r' = foldl max 0 . Prelude.map h . rows . accumulateCols ostar
+> r  = foldl max 0 . Prelude.map area . filter filled . bag . rects
+>   where
+>     bag = reduce (++) (++) . map (\ x -> [x])
+> r' = reduce max max . map h . rows . accumulateCols ostar
 >   where
 >     h = foldl max 0 . Prelude.map f . segs
 >     f x = width x * reduce min min x
