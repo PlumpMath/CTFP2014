@@ -88,12 +88,9 @@ We wish to calculate an efficient algorithm for computing a function
 
 < eval :: Tree -> Number
 < eval (Tip n)    =  n
-< eval (Fork ts)  =  fold _Max (map (neg eval) ts)
+< eval (Fork ts)  =  fold _Max (map (neg . eval) ts)
 
-where
-
-< neg :: (a -> Number) -> a -> Number
-< neg f e = -1 * (f e)
+Where |neg| is a shorthand for |negate|.
 
 Using the specialisation lemma on the right-hand side of the second
 equation for |eval|, we obtain
@@ -103,17 +100,17 @@ equation for |eval|, we obtain
 where
 
 < help1 :: Number -> Tree -> Number
-< help1 a t  =  a `max` (neg eval) t
+< help1 a t  =  a `max` neg (eval t)
 
 We now expand this last equation by considering the two possible forms
 for a tree |t|:
 
-< help1 a (Tip n)    =  a `max` (-1 * n)
-< help1 a (Fork ts)  =  a `max` (-1 * (fold _Max (map (neg eval) ts)))
+< help1 a (Tip n)    =  a `max` neg n
+< help1 a (Fork ts)  =  a `max` neg (fold _Max (map (neg . eval) ts))
 
 The last equation can now be simplified using the laws
 
-< -1 * (a `max` b)    =  (-1 * a) `min` (-1 * b)
+< -1 * (a `max` b)    =  neg a `min` neg b
 < a `max` (b `min`c)  =  (a `max` b) `min` (a `max` c)
 
 We obtain
@@ -143,7 +140,7 @@ Let us now expand the definition of |help2 a b t| in a similar way as
 we did for |help1 a t|. We obtain
 
 < help2 a b (Tip n)    =  b `min` (a `max` n)
-< help2 a b (Fork ts)  =  b `min` (a `max` (fold _Max (map (neg eval) ts)))
+< help2 a b (Fork ts)  =  b `min` (a `max` (fold _Max (map (neg . eval) ts)))
 
 In order to simplify the right-hand side of this last equation, we need
 the dual-distributive law
@@ -160,7 +157,7 @@ by commutativity of |min|.
 We then obtain
 
 < help2 a b (Fork ts)  =
-<   a `max` (fold _Max (map (min b) (map (neg eval) ts)))
+<   a `max` (fold _Max (map (min b) (map (neg . eval) ts)))
 
 Using specialisation yet a third time, we obtain
 
@@ -169,13 +166,13 @@ Using specialisation yet a third time, we obtain
 where
 
 < help3 :: Number -> Number -> Tree -> Number
-< help3 b a t  =  a `max` (b `min` (neg eval) t)
+< help3 b a t  =  a `max` (b `min` (neg . eval) t)
 
 At this point, the seemingly endless succession of expansion and
 specialisation steps can be stopped.  A short calculation using the
 given properties of |-|, |min| and |max| yields
 
-< help3 b a t  =  -1 * (help2 (-1 * b) (-1 * a) t)
+< help3 b a t  =  neg (help2 (neg b) (neg a) t)
 
 Putting everything together, we now have
 
@@ -187,7 +184,7 @@ Putting everything together, we now have
 > help2 a b (Fork ts)  =  foldl (help3 b) a ts
 >
 > help3 :: Number -> Number -> Tree -> Number
-> help3 b a t =  -1 * (help2 (-1 * b) (-1 * a) t)
+> help3 b a t =  neg (help2 (neg b) (neg a) t)
 
 Finally, we bring on the left-zeros (absorbing elements).  We only need
 to observe that |b| is a left-zero of |help3 b|.  This follows from
