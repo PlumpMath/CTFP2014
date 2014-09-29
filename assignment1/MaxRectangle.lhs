@@ -7,6 +7,7 @@
 %format * = "\cdot "
 %format theta = "\theta"
 
+\usepackage{amsmath}
 \usepackage{amsthm}
 \newtheorem{lemma}{Lemma}
 \newtheorem{theorem}{Theorem}
