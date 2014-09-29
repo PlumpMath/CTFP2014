@@ -133,6 +133,7 @@ Considering the array element selectors/extractors
 > topright = reduce left right
 
 We define
+
 > accumulateCols :: (a -> a -> a) -> Array a -> Array a
 > accumulateCols f (Singleton z) = Singleton z
 > accumulateCols f (Above x (Singleton y)) = Above xs (Singleton (f (bottomleft xs) y))
@@ -153,6 +154,7 @@ Satisfying
 > -- See lecture notes 4.9 Tops and bottoms
 
 In a similar fashion to tails and inits
+
 > lefts :: Array a -> Array (Array a)
 > lefts = accumulateRows Beside . cols
 
