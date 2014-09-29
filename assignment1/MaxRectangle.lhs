@@ -3,6 +3,7 @@
 %format ostar = "\oast "
 %format oplus = "\oplus "
 %format otimes = "\otimes "
+%format odot = "\odot "
 %format * = "\cdot "
 %format theta = "\theta"
 
@@ -218,8 +219,8 @@ missing
 
 
 
-4.10 Horner's rule
-
+\begin{lemma}[Horner's rule]
+\label{lem:horner}
 Analogue of Horner's rule for arrays:
 
 < reduce oplus oplus . map (reduce otimes odot) . bottoms
@@ -235,6 +236,11 @@ Where ostar is defined as:
 
 > ostar :: a -> a -> a
 > a `ostar` b = (a `otimes` b) `oplus` b
+\end{lemma}
+
+\begin{proof}
+missing
+\end{proof}
 
 An example case:
 
