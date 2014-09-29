@@ -205,7 +205,7 @@ missing
 > -- See lecture notes 4.14 Application (R)
 > r, r' :: Array Int -> Int
 > r  = foldl max 0 . Prelude.map area . filter filled . rects
-> r' = foldl max 0 . Prelude.map h . rows . accumulate ostar
+> r' = foldl max 0 . Prelude.map h . rows . accumulateCols ostar
 >   where
 >     h = foldl max 0 . Prelude.map f . segs
 >     f x = width x * reduce min min x
@@ -273,12 +273,12 @@ Now we argue:
 \label{lem:rectangle-decomposition}
 If for some |g|, |ostar|
 
-< reduce (oplus) (oplus) . map f . bottoms = g . directedReduce (ostar)
+< reduce (oplus) (oplus) . map f . bottoms = g . columnReduce (ostar)
 
 then
 
 < reduce (oplus) (oplus) . map f . rects =
-<    reduce (oplus) (oplus) . map h . rows . accumulate (ostar)
+<    reduce (oplus) (oplus) . map h . rows . accumulateCols (ostar)
 <   where
 <     h = reduce (oplus) (oplus) . map g . vsegs
 \end{lemma}
@@ -320,20 +320,20 @@ Now we argue:
       . tops
 = {- assumption -}
   reduce (oplus) (oplus)
-      . map (reduce (oplus) (oplus) . map (g . directedReduce (ostar)) . vsegs)
+      . map (reduce (oplus) (oplus) . map (g . columnReduce (ostar)) . vsegs)
       . tops
 = {- map distributivity -}
   reduce (oplus) (oplus)
-      . map (reduce (oplus) (oplus) . map g . map (directedReduce (ostar)) . vsegs)
+      . map (reduce (oplus) (oplus) . map g . map (columnReduce (ostar)) . vsegs)
       . tops
 = {- orthogonal reduction rule -}
   reduce (oplus) (oplus)
-      . map (reduce (oplus) (oplus) . map g . vsegs . directedReduce (ostar))
+      . map (reduce (oplus) (oplus) . map g . vsegs . columnReduce (ostar))
       . tops
 = {- map distributivity; |h = reduce oplus oplus . map g . vsegs| -}
-  reduce (oplus) (oplus) . map h . map (directedReduce (ostar)) . tops
+  reduce (oplus) (oplus) . map h . map (columnReduce (ostar)) . tops
 = {- accumulation lemma -}
-  reduce (oplus) (oplus) . map h . rows . accumulate (ostar)
+  reduce (oplus) (oplus) . map h . rows . accumulateCols (ostar)
 \end{spec}
 
 
@@ -345,7 +345,7 @@ Now we argue:
 
 can be expressed as
 
-< (\ x -> width x * foldl min undefined x) . directedReduce ostar
+< (\ x -> width x * foldl min undefined x) . columnReduce ostar
 \end{lemma}
 
 \begin{proof}
@@ -358,7 +358,7 @@ missing
 
 can be expressed as
 
-< reduce max max . map (reduce max max . map g . vsegs) . rows . accumulate ostar
+< reduce max max . map (reduce max max . map g . vsegs) . rows . accumulateCols ostar
 \end{corollary}
 
 \begin{proof}
@@ -384,7 +384,7 @@ missing
 
 can be expressed as
 
-< fold max . map (foldl max 0 . map (\ x -> length x * foldl min undefined x) . segs) . rows . accumulate ostar
+< fold max . map (foldl max 0 . map (\ x -> length x * foldl min undefined x) . segs) . rows . accumulateCols ostar
 \end{theorem}
 
 \begin{proof}\hfill
@@ -396,11 +396,11 @@ can be expressed as
 
 = Rectangle decomposition
 
-< foldl max 0 . map (foldl max 0 . map (\ x -> width x * foldl min undefined x) . vsegs) . rows . accumulate ostar
+< foldl max 0 . map (foldl max 0 . map (\ x -> width x * foldl min undefined x) . vsegs) . rows . accumulateCols ostar
 
 = On lists
 
-< foldl max 0 . map (foldl max 0 . map (\ x -> length x * foldl min undefined x) . segs) . rows . accumulate ostar
+< foldl max 0 . map (foldl max 0 . map (\ x -> length x * foldl min undefined x) . segs) . rows . accumulateCols ostar
 \end{proof}
 
 
