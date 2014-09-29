@@ -21,6 +21,8 @@
 > import qualified Prelude
 > import Prelude hiding (Left, map, zipWith)
 
+
+
 > class Binoid a where
 >   (+^) :: a -> a -> a
 >   (*^) :: a -> a -> a
@@ -215,13 +217,108 @@ missing
 \end{proof}
 
 
-> -- See lecture notes 4.11 Rectangles
-> vsegs :: Array a -> Array (Array a)
-> vsegs = undefined
 
-> -- See lecture notes 4.11 Rectangles
+4.10 Horner's rule
+
+Analogue of Horner's rule for arrays:
+
+< reduce oplus oplus . map (reduce otimes odot) . bottoms
+
+OBS: corrected a probable mistake in the paper.
+
+It is necessary that otimes distributes over oplus and oplus abides with odot.
+These properties allow one to prove that:
+
+< reduce oplus oplus . map (reduce otimes odot) . bottoms = reduce odot odot .  rowReduce ostar
+
+Where ostar is defined as:
+
+> ostar :: a -> a -> a
+> a `ostar` b = (a `otimes` b) `oplus` b
+
+An example case:
+
+\begin{equation*}
+x = \begin{pmatrix}
+    1 & 2 \\
+    3 & 4 \\
+    5 & 6 \\
+\end{pmatrix}
+\end{equation*}
+
+LHS:
+
+< ((1 `otimes` 3 `otimes` 5) `odot` (2 `otimes` 4 `otimes` 6)) `oplus` ((3 `otimes` 5) `odot` (4 `otimes` 6)) `oplus` (5 `odot` 6)
+
+oplus and odot abide:
+
+< ((1 `otimes` 3 `otimes` 5) `oplus` (3 `otimes` 5) `oplus` 5) `odot` ((2 `otimes` 4 `otimes` 6) `oplus` (4 `otimes` 6) `oplus` 6)
+
+distribution of otimes over oplus:
+
+< ((((1 `otimes` 3) `oplus` 3) `otimes` 5) `oplus` 5) `odot` ((((2 `otimes` 4) `oplus` 4) `otimes` 6) `oplus` 6)
+
+use ostar to simplify:
+
+< ((1 `ostar` 3) `ostar` 5) `odot` ((2 `ostar` 4) `ostar` 6)
+
+and finally:
+
+< reduce odot odot (rowReduce ostar x)
+
+which is the RHS.
+
+
+
+
+4.11 Rectangles
+
+Top-lefts of an array.  Analogous to ``inits'' for lists.
+
+> topls :: Array a -> Array (Array a)
+> topls = reduce (|-|) (|||) . map tops . lefts
+
+Example:
+
+\[
+topls \begin{pmatrix}
+1 & 2 & 3 \\
+4 & 5 & 6 \\
+7 & 8 & 9 \\
+\end{pmatrix} = \begin{pmatrix}
+\begin{pmatrix} 1\\\end{pmatrix} & \begin{pmatrix}1&2\\\end{pmatrix} & \begin{pmatrix}1&2&3\\\end{pmatrix} \\
+\begin{pmatrix} 1\\4\\\end{pmatrix} & \begin{pmatrix}1&2\\4&5\\\end{pmatrix} & \begin{pmatrix}1&2&3\\4&5&6\\\end{pmatrix} \\
+\begin{pmatrix} 1\\4\\7\\\end{pmatrix} & \begin{pmatrix}1&2\\4&5\\7&8\\\end{pmatrix} & \begin{pmatrix}1&2&3\\4&5&6\\7&8&9\\\end{pmatrix} \\
+\end{pmatrix}
+\]
+
+Bottom rights, like ``tails''.
+
+> botrs :: Array a -> Array (Array a)
+> botrs = reduce (|-|) (|||) . map bottoms . rights
+
+Horizontal segments:
+
+> hsegs :: Array a -> Array (Array a)
+> hsegs = reduce (|-|) (|||) . map bottoms . tops
+
+Vertical segments:
+
+> vsegs :: Array a -> Array (Array a)
+> vsegs = reduce (|-|) (|||) . map rights . lefts
+
+One way of defining the rectangles:
+
 > rects :: Array a -> Array (Array a)
-> rects = undefined
+
+< rects = reduce (|-|) (|||) . map botrs . topls
+
+Another way:
+
+> rects = reduce (|-|) (|||) . map hsegs . vsegs
+
+
+
 
 > -- See lecture notes 4.14 Application
 > area :: Array a -> Int
