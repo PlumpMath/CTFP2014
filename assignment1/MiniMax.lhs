@@ -38,9 +38,9 @@ Here just so we can use literals...
 > instance Num Number where
 >   fromInteger = Z
 >
->   negate (Z n)   = Z (-n)
->   negate (Z Top) = Z Bot
->   negate (Z Bot) = Z Top
+>   negate (Z n) = Z (-n)
+>   negate (Top) = Bot
+>   negate (Bot) = Top
 
 %endif
 
@@ -86,6 +86,13 @@ We now generalise the minimax problem to trees. Consider the data-type
 
 We wish to calculate an efficient algorithm for computing a function
 |eval| as follows:
+
+%if False
+
+> neg :: Num a => a -> a
+> neg = negate
+
+%endif
 
 < eval :: Tree -> Number
 < eval (Tip n)    =  n
