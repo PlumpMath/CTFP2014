@@ -542,7 +542,15 @@ Apply Lemma~\ref{lem:rectangle-decomposition} to Lemma~\ref{lem:a}.
 \end{lemma}
 
 \begin{proof}
-missing
+If |x| is not filled, then it contains a zero element. Therefore,
+one of the |oplus| operations yields zero. The zero is propagated
+by the surrounding |oplus|s so that the whole reduction becomes
+zero.
+
+If |x| is filled, then the reduction can be reduced to a single
+series of |oplus| operations on |1|s. Since |oplus| behaves on
+non-zero arguments like the ordinary |+|, the reduction yields the
+element count of |x| which is equal to its area.
 \end{proof}
 
 
