@@ -474,16 +474,49 @@ Now we argue:
 \end{proof}
 
 
-\begin{lemma}\label{lem:a}\hfill
+\begin{lemma}\label{lem:a}
+If solely arrays over $\{0, 1\}$ are considered, then
+
 < reduce max max . map (reduce oplus oplus) . bottoms
+<   where
+<     oplus 0 _ = 0
+<     oplus _ 0 = 0
+<     oplus a b = a + b
 
 can be expressed as
 
-< (\ x -> width x * foldl min undefined x) . columnReduce ostar
+< (\ x -> width x * reduce min min x) . columnReduce ostar
+<   where
+<     ostar _ 0 = 0
+<     ostar a b = a + b
 \end{lemma}
 
-\begin{proof}
-missing
+\begin{proof}\hfill
+< reduce max max . map (reduce oplus oplus) . bottoms
+
+= $x \in \{ 0, 1 \}^{n \times m}$: |reduce oplus oplus x = width x * reduce oplus min x|
+
+< reduce max max . map (\ y -> width y * reduce oplus min y) . bottoms
+
+= all bottoms have the same width
+
+< reduce max max $ map (\ y -> width x . reduce oplus min y) $ bottoms x
+
+= map distributivity
+
+< reduce max max $ map (width x *) $ map (reduce oplus min) $ bottoms x
+
+= the width is a positive number
+
+< width x * (reduce max max . map (reduce oplus min) . bottoms) x
+
+= Horner's rule: |oplus| distributes through |max|, and |min| abides with |oplus|
+
+< width x * (reduce min min . columnReduce ostar) x
+
+= |columnReduce| preserves the width
+
+< (\ x -> width x * reduce min min x) . columnReduce ostar
 \end{proof}
 
 
