@@ -140,7 +140,7 @@ as well as
 < reduce oplus otimes = fold otimes . map (fold oplus) . listcols
 
 
-> -- See lecture notes 4.7 Directed reductions (⤈)   TODO: name changes where appropriate
+> -- See lecture notes 4.7 Directed reductions (⤈)
 >
 > singleExtract :: Array a -> a
 > singleExtract (Singleton x) = x
@@ -170,7 +170,7 @@ Considering the array element selectors/extractors
 > topright :: Array a -> a
 > topright = reduce left right
 
-We define
+We define downward and rightward accumulations
 
 > accumulateCols :: (a -> a -> a) -> Array a -> Array a
 > accumulateCols f (Singleton z) = Singleton z
@@ -182,16 +182,38 @@ We define
 > accumulateRows f (Singleton z) = Singleton z
 > accumulateRows f (Beside x (Singleton y)) = Beside xs (Singleton (f (topright xs) y))
 >   where xs = accumulateRows f x
-> accumulateRows f (Above x y) = Beside (accumulateRows f x) (accumulateRows f y)
+> accumulateRows f (Above x y) = Above (accumulateRows f x) (accumulateRows f y)
 
 Satisfying
 < listrows . (accumulateRows f) == map (scanl f) . listrows
 < listcols . (accumulateCols f) == map (scanl f) . listcols
 
+Similarly, we can define accumulations in the opposite directions (i.e.: upwards and leftwards)
+
+> accumulateColsUp :: (a -> a -> a) -> Array a -> Array a
+> accumulateColsUp f (Singleton z) = Singleton z
+> accumulateColsUp f (Above (Singleton y) x) = Above (Singleton (f (topleft xs) y)) xs
+>   where xs = accumulateColsUp f x
+> accumulateColsUp f (Beside x y) = Beside (accumulateColsUp f x) (accumulateColsUp f y)
+
+> accumulateRowsLeft :: (a -> a -> a) -> Array a -> Array a
+> accumulateRowsLeft f (Singleton z) = Singleton z
+> accumulateRowsLeft f (Beside (Singleton y)) = Beside (Singleton (f (bottomright xs) y)) xs
+>   where xs = accumulateRowsLeft f x
+> accumulateRowsLeft f (Above x y) = Above (accumulateRowsLeft f x) (accumulateRowsLeft f y)
+
+Where the new element selectors would be
+
+> topleft :: Array a -> a
+> topleft = reduce left left
+
+> bottomright :: Array a -> a
+> bottomright = reduce right right
+
 
 > -- See lecture notes 4.9 Tops and bottoms
 
-In a similar fashion to tails and inits
+In a similar fashion to inits
 
 > lefts :: Array a -> Array (Array a)
 > lefts = accumulateRows Beside . cols
@@ -199,11 +221,13 @@ In a similar fashion to tails and inits
 > tops :: Array a -> Array (Array a)
 > tops = accumulateCols Above . rows
 
+And then to tails
+
 > rights :: Array a -> Array (Array a)
-> rights = undefined
+> rights = accumulateRowsLeft Beside . cols
 
 > bottoms :: Array a -> Array (Array a)
-> bottoms = undefined
+> bottoms = accumulateColsUp Above . rows
 
 \begin{lemma}[Accumulation lemma]
 
