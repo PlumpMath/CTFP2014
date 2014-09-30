@@ -38,8 +38,9 @@ Here just so we can use literals...
 > instance Num Number where
 >   fromInteger = Z
 >
->   negate (Z n) = Z (-n)
->   negate _     = error "Number: Can't negate infinities"
+>   negate (Z n)   = Z (-n)
+>   negate (Z Top) = Z Bot
+>   negate (Z Bot) = Z Top
 
 %endif
 
