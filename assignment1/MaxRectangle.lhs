@@ -36,6 +36,11 @@ Satifsies
 Satisfies
 < (a +^ b) *^ (c +^ d) == (a *^ c) +^ (b *^ d)
 
+> oplus :: a -> a -> a
+> oplus = undefined
+> otimes :: a -> a -> a
+> otimes = undefined
+
 > left, right :: a -> a -> a
 > left  a _ = a
 > right _ b = b
@@ -193,6 +198,12 @@ In a similar fashion to tails and inits
 
 > tops :: Array a -> Array (Array a)
 > tops = accumulateCols Above . rows
+
+> rights :: Array a -> Array (Array a)
+> rights = undefined
+
+> bottoms :: Array a -> Array (Array a)
+> bottoms = undefined
 
 \begin{lemma}[Accumulation lemma]
 
