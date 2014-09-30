@@ -559,7 +559,7 @@ element count of |x| which is equal to its area.
 
 can be expressed as
 
-< fold max . map (foldl max 0 . map (\ x -> length x * foldl min undefined x) . segs) . rows . accumulateCols ostar
+< foldl max 0 . map (foldl max 0 . map (\ x -> length x * foldl min undefined x) . segs) . rows . accumulateCols ostar
 \end{theorem}
 
 \begin{proof}\hfill
