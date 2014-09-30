@@ -237,6 +237,7 @@ Where ostar is defined as:
 
 > ostar :: a -> a -> a
 > a `ostar` b = (a `otimes` b) `oplus` b
+
 \end{lemma}
 
 \begin{proof}
