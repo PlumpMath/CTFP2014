@@ -237,8 +237,6 @@ Analogue of Horner's rule for arrays:
 
 < reduce oplus oplus . map (reduce otimes odot) . bottoms
 
-OBS: corrected a probable mistake in the paper.
-
 It is necessary that otimes distributes over oplus and oplus abides with odot.
 These properties allow one to prove that:
 
