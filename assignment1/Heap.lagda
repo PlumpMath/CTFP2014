@@ -53,6 +53,9 @@ data Tree (A : Set) : Bool × Bool → Set where
 
 HTree : Set → Set
 HTree A = Σ (Bool × Bool) (λ zz → Tree A zz)
+
+hlift : ∀ {lr A} → Tree A lr → HTree A
+hlift {proj₁ , proj₂} x = (proj₁ , proj₂) , x
 \end{code}
 
 \section{Maps and reduces}
@@ -116,18 +119,20 @@ up r d (x ↙ (⟨ a ⟩ ↘ y)) = up r d x ↙ (⟨ Reducer.⊕ r (label d (up 
 up r d (⟨ a ⟩ ↘ y) = ⟨ Reducer.⊗ r a (label d (up r d y)) ⟩ ↘ up r d y
 up r d ((x ↙ ⟨ a ⟩) ↘ y) = up r d x ↙ (⟨ Reducer.⊕ r (label d (up r d x)) (Reducer.⊗ r a (label d (up r d y))) ⟩ ↘ up r d y)
 
--- subtrees : ∀ {A lr} → A → Tree A {!!} → Tree A ? → Tree (Tree A {!!}) ?
--- subtrees d d' = up (record { ⊕ = _↙_ ; ⊗ = _↘_ ; e = ⟨ d ⟩ }) d' ∘ map-tree ⟨_⟩
+_↙'_ :  ∀ {A} → HTree A → HTree A → HTree A
+a ↙' b = {!!}
 
---subtrees-inverse : ∀ {A}{d : A}{d' : Tree A ?}{x} → map-tree {b = ?} (label d) (subtrees d d' x) ≡ x
---subtrees-inverse {x = ⟨ x ⟩} = refl
---subtrees-inverse {x = x ↙ y} = {!!}
---subtrees-inverse {x = x ↘ y} = {!!}
+_↘'_ :  ∀ {A} → HTree A → HTree A → HTree A
+a ↘' b = {!!}
 
---accum-lemma : ∀ {A}{d : A}{d' : Tree A ?}{r}{x} → up {b = ?} r d x ≡ (map-tree (reduce-tree r) ∘ subtrees d d') x
---accum-lemma {x = ⟨ x ⟩} = refl
---accum-lemma {x = x ↙ y} = {!!}
---accum-lemma {x = x ↘ y} = {!!}
+subtrees : ∀ {A lr} → A → Tree A lr → Tree (HTree A) lr
+subtrees d = up (record { ⊕ = _↙'_ ; ⊗ = _↘'_ ; e = (true , true) , ⟨ d ⟩ }) ((true , true) , ⟨ d ⟩) ∘ map-tree (λ x → (true , true) , ⟨ x ⟩)
+
+subtrees-inverse : ∀ {A}{d : A}{x} → map-tree (label d ∘ proj₂) (subtrees d x) ≡ x
+subtrees-inverse = {!!}
+
+accum-lemma : ∀ {A}{d : A}{r}{x} → up r d x ≡ (map-tree (reduce-tree r ∘ proj₂) ∘ subtrees d) x
+accum-lemma = {!!}
 \end{code}
 
 \section{Building a heap}
