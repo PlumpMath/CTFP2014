@@ -104,8 +104,8 @@ so that (join rules)
 
 > zipWith :: (a -> a -> a) -> Array a -> Array a -> Array a
 > zipWith op (Singleton a) (Singleton b)  = Singleton $ a `op` b
-> zipWith op (Above x y)   (Above x' y')  = zipWith op x y `Above`  zipWith op x' y'
-> zipWith op (Beside x y)  (Beside x' y') = zipWith op x y `Beside` zipWith op x' y'
+> zipWith op (Above x y)   (Above x' y')  = zipWith op x x' `Above`  zipWith op y y'
+> zipWith op (Beside x y)  (Beside x' y') = zipWith op x x' `Beside` zipWith op y y'
 
 > -- See lecture notes 1.9 Segments
 > segs :: Array a -> [Array a]
@@ -198,7 +198,7 @@ Similarly, we can define accumulations in the opposite directions (i.e.: upwards
 
 > accumulateRowsLeft :: (a -> a -> a) -> Array a -> Array a
 > accumulateRowsLeft f (Singleton z) = Singleton z
-> accumulateRowsLeft f (Beside (Singleton y)) = Beside (Singleton (f (bottomright xs) y)) xs
+> accumulateRowsLeft f (Beside x (Singleton y)) = Beside (Singleton (f (bottomright xs) y)) xs
 >   where xs = accumulateRowsLeft f x
 > accumulateRowsLeft f (Above x y) = Above (accumulateRowsLeft f x) (accumulateRowsLeft f y)
 
@@ -245,6 +245,8 @@ Given the orthogonal reduction rules
 and the orthogonal accumulation rules
 < map (accumulateCols f) . lefts = lefts . accumulateCols f
 < map (accumulateRows f) . tops  = tops  . accumulateRows f
+< map (accumulateCols f) . rights = rights . accumulateCols f
+< map (accumulateRows f) . bottoms = bottoms . accumulateRows f
 
 We obtain
 \begin{spec}
