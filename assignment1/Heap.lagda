@@ -50,6 +50,9 @@ data Tree (A : Set) : Bool × Bool → Set where
   ⟨_⟩ : A → Tree A (true , true)
   _↙_ : ∀ {lx rx ry} → Tree A (lx , rx) → Tree A (true , ry) → Tree A (false , ry)
   _↘_ : ∀ {lx ly ry} → Tree A (lx , true) → Tree A (ly , ry) → Tree A (lx , false)
+
+HTree : Set → Set
+HTree A = Σ (Bool × Bool) (λ zz → Tree A zz)
 \end{code}
 
 \section{Maps and reduces}
@@ -113,7 +116,7 @@ up r d (x ↙ (⟨ a ⟩ ↘ y)) = up r d x ↙ (⟨ Reducer.⊕ r (label d (up 
 up r d (⟨ a ⟩ ↘ y) = ⟨ Reducer.⊗ r a (label d (up r d y)) ⟩ ↘ up r d y
 up r d ((x ↙ ⟨ a ⟩) ↘ y) = up r d x ↙ (⟨ Reducer.⊕ r (label d (up r d x)) (Reducer.⊗ r a (label d (up r d y))) ⟩ ↘ up r d y)
 
--- subtrees : ∀ {A lr} → A → Tree A ? {!!} → Tree A ? ? → Tree (Tree A {!!} ?) ? ?
+-- subtrees : ∀ {A lr} → A → Tree A {!!} → Tree A ? → Tree (Tree A {!!}) ?
 -- subtrees d d' = up (record { ⊕ = _↙_ ; ⊗ = _↘_ ; e = ⟨ d ⟩ }) d' ∘ map-tree ⟨_⟩
 
 --subtrees-inverse : ∀ {A}{d : A}{d' : Tree A ?}{x} → map-tree {b = ?} (label d) (subtrees d d' x) ≡ x
@@ -135,8 +138,10 @@ module HeapOrder {ℓ₁ ℓ₂}{ord : DecTotalOrder Level.zero ℓ₁ ℓ₂} w
 
   -- doesn't termination check because the checker doesn't see associativity well
   -- playing with parentheses placement puts termination errors into different places
+
   _⊕h'_ : ∀ {xx yy} → Tree A xx → Tree A yy → Σ (Bool × Bool) (λ zz → Tree A zz)
-  -- identities
+
+  -- left and right identities
   _⊕h'_ {false , false} {yy} ⟨⟩ y  = yy , y
   _⊕h'_ {xx} {false , false} x ⟨⟩  = xx , x
 
@@ -179,9 +184,6 @@ module HeapOrder {ℓ₁ ℓ₂}{ord : DecTotalOrder Level.zero ℓ₁ ℓ₂} w
   ((x ↙ ⟨ a ⟩) ↘ y) ⊕h' (⟨ b ⟩ ↘ v) = ((x ↙ ⟨ a ⟩) ↘ y) ⊕h' ((⟨⟩ ↙ ⟨ b ⟩) ↘ v)
   (x ↙ (⟨ a ⟩ ↘ y)) ⊕h' (u ↙ ⟨ b ⟩) = ((x ↙ ⟨ a ⟩) ↘ y) ⊕h' ((u ↙ ⟨ b ⟩) ↘ ⟨⟩)
   (x ↙ (⟨ a ⟩ ↘ y)) ⊕h' (⟨ b ⟩ ↘ v) = ((x ↙ ⟨ a ⟩) ↘ y) ⊕h' ((⟨⟩ ↙ ⟨ b ⟩) ↘ v)
-
-  HTree : Set → Set
-  HTree A = Σ (Bool × Bool) (λ zz → Tree A zz)
 
   _⊕h_ : HTree A → HTree A → HTree A
   (proj₁ , proj₂) ⊕h (proj₃ , proj₄) = proj₂ ⊕h' proj₄
