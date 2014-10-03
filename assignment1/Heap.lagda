@@ -198,6 +198,19 @@ module HeapOrder {ℓ₁ ℓ₂}{ord : DecTotalOrder Level.zero ℓ₁ ℓ₂} w
 
   heap-inverse : ∀ {n}{x : Vec A (suc n)} → inorder {A} (proj₂ (heap x)) ≡ toList x
   heap-inverse = {!!}
+
+  heaptree : ∀ {lr} → Tree A lr → Bool
+  heaptree xs = nondec (heaporder xs)
+    where
+      -- is that available from the stdlib?
+      nondec : List A → Bool
+      nondec (x ∷ y ∷ xs) with x ⊑? y
+      ... | yes _ = nondec xs
+      ... | no  _ = false
+      nondec _ = true
+
+  heap-tree : ∀ {n}{x : Vec A (suc n)} → heaptree (proj₂ (heap x)) ≡ true
+  heap-tree = {!!}
 \end{code}
 
 \section{Solution as a left reduction}
