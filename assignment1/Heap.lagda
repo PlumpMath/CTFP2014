@@ -211,6 +211,18 @@ module HeapOrder {ℓ₁ ℓ₂}{ord : DecTotalOrder Level.zero ℓ₁ ℓ₂} w
 
   heap-tree : ∀ {n}{x : Vec A (suc n)} → heaptree (proj₂ (heap x)) ≡ true
   heap-tree = {!!}
+
+  heaptree' : ∀ {lr} → Tree A lr → Bool
+  heaptree' (x ↙ y) with  label {!!} y ⊑? label {!!} x
+  ... | yes _ = heaptree' x ∧ heaptree' y
+  ... | no  _ = false
+  heaptree' (x ↘ y) with label {!!} x ⊑? label {!!} y
+  ... | yes _ = heaptree' x ∧ heaptree' y
+  ... | no  _ = false
+  heaptree' _ = true
+
+  heaptree'-equiv : ∀ {lr}{x : Tree A lr} → heaptree' x ≡ heaptree x
+  heaptree'-equiv = {!!}
 \end{code}
 
 \section{Solution as a left reduction}
