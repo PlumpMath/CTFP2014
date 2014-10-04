@@ -13,6 +13,9 @@
 
 \begin{document}
 
+In this example, we're going to optimize the ``minimax'' algorithm
+using equational reasoning and the laws of |map| and |fold|.
+
 \section{Prerequisites}
 
 \subsection{|fold|s and |Number|s}
@@ -31,9 +34,9 @@ associativity of our binary operator.
 The laws for |Monoid|:
 
 \begin{itemize}
-\item |identity <> x = x|
-\item |x <> identity = x|
-\item |x <> (y <> z) = (x <> y) <> z|
+\item |identity <> x = x| (left identity)
+\item |x <> identity = x| (right identity)
+\item |x <> (y <> z) = (x <> y) <> z| (associativity)
 \end{itemize}
 
 We choose not to use the existing |Monoid| typeclass since to be able
@@ -47,13 +50,15 @@ function, |fold|:
 Moreover, to specify the |minimax| function, we need a type that forms
 a |Monoid| with the |max| and |min| operators.  |Integer| will not work,
 since it has no identity element for |min| and |max|.  We fix that by
-defining $\mathbb{Z} \cup \{+\infty, -\infty\}$:
+defining:
 
 > data Number
 >   =  Top
 >   |  Bot
 >   |  Z Integer
 >   deriving (Eq, Ord, Show, Read)
+
+Where |Top| represent $+\infty$, and |Bot| $-\infty$.
 
 We also define an incomplete |Num| instance for |Number|, so that we
 can use integer literals:
@@ -90,6 +95,9 @@ Finally, we can define the |Monoid|s that we are interested in:
 >   }
 
 \subsection{Useful lemmas}
+
+The last ingredient before starting to work on the minimax algorithm
+is some useful lemmas regarding |map| and |fold|.
 
 \begin{lemma*}
 \emph{(|map| distributivity)}
