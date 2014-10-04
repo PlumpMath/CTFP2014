@@ -269,7 +269,7 @@ These properties allow one to prove that:
 
 Where ostar is defined as:
 
-> ostar :: a -> a -> a
+> ostar :: Binoid a => a -> a -> a
 > a `ostar` b = (a `otimes` b) `oplus` b
 
 \end{lemma}
