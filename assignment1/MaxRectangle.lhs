@@ -22,6 +22,7 @@
 
 > import qualified Prelude
 > import Prelude hiding (Left, map, zipWith)
+> import qualified Data.List
 
 
 
@@ -102,8 +103,8 @@ so that (join rules)
 > zipWith op (Beside x y)  (Beside x' y') = zipWith op x x' `Beside` zipWith op y y'
 
 > -- See lecture notes 1.9 Segments
-> segs :: Array a -> [Array a]
-> segs = undefined
+> segs :: [a] -> [[a]]
+> segs = Prelude.foldr (++) [] . Prelude.map Data.List.tails . Data.List.inits
 
 > -- See lecture notes 4.6 Zip
 > rows :: Array a -> Array (Array a)
