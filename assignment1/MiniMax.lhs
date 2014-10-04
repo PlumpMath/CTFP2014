@@ -1,11 +1,34 @@
 \documentclass{article}
 \include{amsmath}
+\usepackage{amsthm}
+\theoremstyle{plain}
+
 %include polycode.fmt
 
 %format <> = "\oplus "
+%format x_0 = "x_0 "
+%format y_0 = "y_0 "
+
+\newtheorem*{lemma*}{Lemma}
 
 \begin{document}
-Laws:
+
+\section{Prerequisites}
+
+\subsection{|fold|s and |Number|s}
+
+To specify and use an Haskell version of the |/| ``reduce'' operator,
+we define a record characterizing monoids.  We do this since following
+the presentation in the paper we want to perform reductions without
+specifying the identity element each time, and relying on the
+associativity of our binary operator.
+
+> data Monoid a = Monoid
+>   {  identity  :: a
+>   ,  (<>)      :: a -> a -> a
+>   }
+
+The laws for |Monoid|:
 
 \begin{itemize}
 \item |identity <> x = x|
@@ -13,17 +36,18 @@ Laws:
 \item |x <> (y <> z) = (x <> y) <> z|
 \end{itemize}
 
-> data Monoid a = Monoid
->   {  identity  :: a
->   ,  (<>)      :: a -> a -> a
->   }
+We choose not to use the existing |Monoid| typeclass since to be able
+to provide different |Monoid|s over the same type to our reducing
+function, |fold|:
 
 > fold :: Monoid a -> [a] -> a
 > fold  Monoid{..}  []        = identity
 > fold  Monoid{..}  (x : xs)  = x <> fold Monoid{..} xs
 
-$\mathbb{Z} \cup \{+\infty, -\infty\}$, useful so that min and max have
-an identity.
+Moreover, to specify the |minimax| function, we need a type that forms
+a |Monoid| with the |max| and |min| operators.  |Integer| will not work,
+since it has no identity element for |min| and |max|.  We fix that by
+defining $\mathbb{Z} \cup \{+\infty, -\infty\}$:
 
 > data Number
 >   =  Top
@@ -31,9 +55,8 @@ an identity.
 >   |  Z Integer
 >   deriving (Eq, Ord, Show, Read)
 
-%if False
-
-Here just so we can use literals...
+We also define an incomplete |Num| instance for |Number|, so that we
+can use integer literals:
 
 > instance Num Number where
 >   fromInteger = Z
@@ -42,23 +65,23 @@ Here just so we can use literals...
 >   negate (Top) = Bot
 >   negate (Bot) = Top
 
-%endif
+Finally, we can define the |Monoid|s that we are interested in:
 
 > _Min :: Monoid Number
 > _Min = Monoid
 >   {  identity = Top
->   ,  (<>) = \x0 y0 -> case (x0, y0) of
+>   ,  (<>) = \x_0 y_0 -> case (x_0, y_0) of
 >        (Top, x)    -> x
 >        (x,   Top)  -> x
 >        (Bot, _)    -> Bot
 >        (_,   Bot)  -> Bot
 >        (Z x, Z y)  -> Z (min x y)
 >   }
-
+>
 > _Max :: Monoid Number
 > _Max = Monoid
 >   {  identity = Bot
->   ,  (<>) = \x0 y0 -> case (x0, y0) of
+>   ,  (<>) = \x_0 y_0 -> case (x_0, y_0) of
 >        (Bot, x)    -> x
 >        (x,   Bot)  -> x
 >        (Top, _)    -> Top
@@ -66,17 +89,59 @@ Here just so we can use literals...
 >        (Z x, Z y)  -> Z (max x y)
 >   }
 
+\subsection{Useful lemmas}
+
+\begin{lemma*}
+\emph{(|map| distributivity)}
+\label{distributivity}
+
+|map| distributes (backwards) through functional composition:
+
+< map (f . g) = map f . map g
+
+\end{lemma*}
+
+\begin{lemma*}
+\emph{(specialization)}
+\label{specialization}
+
+Every homomorphism on lists can be expressed as a left (or also a
+right) reduction.  More precisely,
+
+< fold m . map f = foldl (\a b -> a <> f b) identity 
+
+Where |m| is some |Monoid| with identity |identity| and binary
+operator |<>|.
+
+\end{lemma*}
+
+\section{Minimax}
+
+Given a list of numbers, we want an efficient algorithm that computes
+the minimum of the maximum numbers in each list.
+
+Our starting function is an obvious implementation of the
+specification above:
 
 > minimax :: [[Number]] -> Number
 > minimax = fold _Min . map (fold _Max)
 
+Using the specialization lemma, we can write
+
 < minimax = foldl help1 Top
+
+where
 
 > help :: Number -> [Number] -> Number
 > help a xs = a `min` fold _Max xs
 
-< help a xs = fold _Max (map (min a) xs)
-< help a xs = foldl (\b c -> b `max` (a `min` c)) Bot xs
+Since |min| distributes through |max| we have
+
+< help a = fold _Max . map (min a)
+
+Using the specialization lemma a second time, we have
+
+< help a = foldl (\b c -> b `max` (a `min` c)) Bot
 
 \section{The alpha-beta algorithm}
 
