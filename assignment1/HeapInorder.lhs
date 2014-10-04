@@ -14,7 +14,6 @@
 %format forall = "\forall "
 %format // = "\sswarrow"
 %format \\ = "\ssearrow"
-%format <-> = "\Leftrightarrow"
 
 \begin{document}
 We begin by translating the unoptimized definition
@@ -68,7 +67,7 @@ treeFold (++) (++) [] . treeMap (:[]) $ < a > \\ (u // < b > \\ v)
 
 \textbf{Case} $a \ge b$:
 \begin{spec}
-inorder ((< a > +++ u) // < b > v) == -- by definition of +++
+inorder ((< a > +++ u) // < b > \\ v) == -- by definition of +++
 inorder ((< a > +++ u) // < b > \\ v) == -- by definition of $inorder$
 treeFold (++) (++) [] . treeMap (:[]) $ (< a > +++ u) // (< b > \\ v)
 == -- by definition of $treeFold$ and $treeMap$
@@ -92,7 +91,7 @@ We proceed by induction on $xs$:
 \begin{spec}
 inorder (heap (x : xs)) == -- definition of $heap$:
 inorder (foldr (+++) < > . map (\x -> < x >) $ x : xs) == -- definition of $map$:
-inorder (foldr (+++) < > .$ < x > : map (\x -> < x >) xs) == -- by definition of $foldr$:
+inorder (foldr (+++) < > $ < x > : map (\x -> < x >) xs) == -- by definition of $foldr$:
 inorder (< x > +++ foldr (+++) <  > (map (\x -> < x >) xs)) == -- by Lemma~\ref{lem:inorder}
 [ x ] ++ inorder (foldr (+++) <  > (map (\x -> < x >) xs)) == -- definition of $heap$:
 [ x ] ++ inorder (heap xs) == -- by induction hypothesis
