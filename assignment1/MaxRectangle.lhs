@@ -26,20 +26,15 @@
 
 
 > class Binoid a where
->   (+^) :: a -> a -> a
->   (*^) :: a -> a -> a
+>   oplus :: a -> a -> a
+>   otimes :: a -> a -> a
 
 Satifsies
-< (a +^ b) +^ c == a +^ (b +^ c)
-< (a *^ b) *^ c == a *^ (b *^ c)
+< (a oplus b) oplus c == a oplus (b oplus c)
+< (a otimes b) otimes c == a otimes (b otimes c)
 
 Satisfies
-< (a +^ b) *^ (c +^ d) == (a *^ c) +^ (b *^ d)
-
-> oplus :: a -> a -> a
-> oplus = undefined
-> otimes :: a -> a -> a
-> otimes = undefined
+< (a oplus b) otimes (c oplus d) == (a otimes c) oplus (b otimes d)
 
 > left, right :: a -> a -> a
 > left  a _ = a
@@ -48,12 +43,11 @@ Satisfies
 > newtype Left a = Left { mkLeft :: a }
 
 > instance Binoid (Left a) where
->   (+^) = left
->   (*^) = left
+>   oplus  = left
+>   otimes = left
 
 > dot :: Eq a => a -> a -> a
-> dot a b | a == b    = a
->         | otherwise = undefined
+> dot a b = if a == b then a else undefined
 
 > data Array a
 >   = Singleton a
