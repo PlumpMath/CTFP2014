@@ -290,23 +290,29 @@ x = \begin{pmatrix}
 
 LHS:
 
-< ((1 `otimes` 3 `otimes` 5) `odot` (2 `otimes` 4 `otimes` 6)) `oplus` ((3 `otimes` 5) `odot` (4 `otimes` 6)) `oplus` (5 `odot` 6)
+\def\commentbegin{\quad\{\ }
+\def\commentend{\}}
 
-oplus and odot abide:
+\begin{spec}
 
-< ((1 `otimes` 3 `otimes` 5) `oplus` (3 `otimes` 5) `oplus` 5) `odot` ((2 `otimes` 4 `otimes` 6) `oplus` (4 `otimes` 6) `oplus` 6)
+  ((1 `otimes` 3 `otimes` 5) `odot` (2 `otimes` 4 `otimes` 6)) `oplus` ((3 `otimes` 5) `odot` (4 `otimes` 6)) `oplus` (5 `odot` 6)
 
-distribution of otimes over oplus:
+= {- oplus and odot abide -}
 
-< ((((1 `otimes` 3) `oplus` 3) `otimes` 5) `oplus` 5) `odot` ((((2 `otimes` 4) `oplus` 4) `otimes` 6) `oplus` 6)
+  ((1 `otimes` 3 `otimes` 5) `oplus` (3 `otimes` 5) `oplus` 5) `odot` ((2 `otimes` 4 `otimes` 6) `oplus` (4 `otimes` 6) `oplus` 6)
 
-use ostar to simplify:
+= {- distribution of otimes over oplus -}
 
-< ((1 `ostar` 3) `ostar` 5) `odot` ((2 `ostar` 4) `ostar` 6)
+  ((((1 `otimes` 3) `oplus` 3) `otimes` 5) `oplus` 5) `odot` ((((2 `otimes` 4) `oplus` 4) `otimes` 6) `oplus` 6)
 
-and finally:
+= {- use ostar to simplify -}
 
-< reduce odot odot (rowReduce ostar x)
+  ((1 `ostar` 3) `ostar` 5) `odot` ((2 `ostar` 4) `ostar` 6)
+
+= {- and finally -}
+
+  reduce odot odot (rowReduce ostar x)
+\end{spec}
 
 which is the RHS.
 \end{example}
@@ -526,31 +532,36 @@ can be expressed as
 \end{lemma}
 
 \begin{proof}\hfill
-< reduce max max . map (reduce oplus oplus) . bottoms
+\def\commentbegin{\quad\{\ }
+\def\commentend{\}}
 
-= $x \in \{ 0, 1 \}^{n \times m}$: |reduce oplus oplus x = width x * reduce oplus min x|
+\begin{spec}
+  reduce max max . map (reduce oplus oplus) . bottoms
 
-< reduce max max . map (\ y -> width y * reduce oplus min y) . bottoms
+= {- $x \in \{ 0, 1 \}^{n \times m}$: |reduce oplus oplus x = width x * reduce oplus min x| -}
 
-= all bottoms have the same width
+  reduce max max . map (\ y -> width y * reduce oplus min y) . bottoms
 
-< reduce max max $ map (\ y -> width x . reduce oplus min y) $ bottoms x
+= {- all bottoms have the same width -}
 
-= map distributivity
+  reduce max max $ map (\ y -> width x . reduce oplus min y) $ bottoms x
 
-< reduce max max $ map (width x *) $ map (reduce oplus min) $ bottoms x
+= {- map distributivity -}
 
-= the width is a positive number
+  reduce max max $ map (width x *) $ map (reduce oplus min) $ bottoms x
 
-< width x * (reduce max max . map (reduce oplus min) . bottoms) x
+= {- the width is a positive number -}
 
-= Horner's rule: |oplus| distributes through |max|, and |min| abides with |oplus|
+  width x * (reduce max max . map (reduce oplus min) . bottoms) x
 
-< width x * (reduce min min . columnReduce ostar) x
+= {- Horner's rule: |oplus| distributes through |max|, and |min| abides with |oplus| -}
 
-= |columnReduce| preserves the width
+  width x * (reduce min min . columnReduce ostar) x
 
-< (\ x -> width x * reduce min min x) . columnReduce ostar
+= {- |columnReduce| preserves the width -}
+
+  (\ x -> width x * reduce min min x) . columnReduce ostar
+\end{spec}
 \end{proof}
 
 
@@ -597,19 +608,24 @@ can be expressed as
 \end{theorem}
 
 \begin{proof}\hfill
-< foldl max 0 . map area . filter filled . rects
+\def\commentbegin{\quad\{\ }
+\def\commentend{\}}
 
-= Filter erasure (OBS: the result for empty arrays is zero, was -∞ before)
+\begin{spec}
+  foldl max 0 . map area . filter filled . rects
 
-< reduce max max . map (reduce oplus oplus) . rects
+= {- Filter erasure (OBS: the result for empty arrays is zero, was -∞ before) -}
 
-= Rectangle decomposition
+  reduce max max . map (reduce oplus oplus) . rects
 
-< foldl max 0 . map (foldl max 0 . map (\ x -> width x * foldl min undefined x) . vsegs) . rows . accumulateCols ostar
+= {- Rectangle decomposition -}
 
-= On lists
+  foldl max 0 . map (foldl max 0 . map (\ x -> width x * foldl min undefined x) . vsegs) . rows . accumulateCols ostar
 
-< foldl max 0 . map (foldl max 0 . map (\ x -> length x * foldl min undefined x) . segs) . rows . accumulateCols ostar
+= {- On lists -}
+
+  foldl max 0 . map (foldl max 0 . map (\ x -> length x * foldl min undefined x) . segs) . rows . accumulateCols ostar
+\end{spec}
 \end{proof}
 
 
