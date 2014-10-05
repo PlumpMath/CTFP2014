@@ -163,8 +163,8 @@ as well as
 < reduce oplus otimes = fold otimes . map (fold oplus) . listcols
 
 
-> -- See lecture notes 4.7 Directed reductions (⤈)
->
+\subsection{Directed reduction}
+
 > singleExtract :: Array a -> a
 > singleExtract (Singleton x) = x
 
@@ -183,7 +183,7 @@ Satisfy
 < cols  == columnReduce Above . map Singleton
 
 
-> -- See lecture notes 4.8 Accumulations
+\subsection{Accumulations}
 
 Considering the array element selectors/extractors
 
@@ -195,11 +195,11 @@ Considering the array element selectors/extractors
 
 We define downward and rightward accumulations
 
-> accumulateCols :: (a -> a -> a) -> Array a -> Array a
-> accumulateCols f (Singleton z)            = Singleton z
-> accumulateCols f (Above x (Singleton y))  = Above xs (Singleton (f (bottomleft xs) y))
->   where xs = accumulateCols f x
-> accumulateCols f (Beside x y)             = Beside (accumulateCols f x) (accumulateCols f y)
+> topAccumulation :: (a -> a -> a) -> Array a -> Array a
+> topAccumulation f (Singleton z)            = Singleton z
+> topAccumulation f (Above x (Singleton y))  = Above xs (Singleton (f (bottomleft xs) y))
+>   where xs = topAccumulation f x
+> topAccumulation f (Beside x y)             = Beside (topAccumulation f x) (topAccumulation f y)
 
 > accumulateRows :: (a -> a -> a) -> Array a -> Array a
 > accumulateRows f (Singleton z)             = Singleton z
@@ -209,7 +209,7 @@ We define downward and rightward accumulations
 
 Satisfying
 < listrows . (accumulateRows f)  == map (scanl f) . listrows
-< listcols . (accumulateCols f)  == map (scanl f) . listcols
+< listcols . (topAccumulation f)  == map (scanl f) . listcols
 
 Similarly, we can define accumulations in the opposite directions (i.e.: upwards and leftwards)
 
@@ -226,7 +226,7 @@ Similarly, we can define accumulations in the opposite directions (i.e.: upwards
 > accumulateRowsLeft f (Above x y)               = Above (accumulateRowsLeft f x) (accumulateRowsLeft f y)
 
 
-> -- See lecture notes 4.9 Tops and bottoms
+\subsection{Segments: tops \& bottoms, lefts \& rights}
 
 In a similar fashion to inits
 
@@ -234,7 +234,7 @@ In a similar fashion to inits
 > lefts = accumulateRows Beside . cols
 
 > tops :: Array a -> Array (Array a)
-> tops = accumulateCols Above . rows
+> tops = topAccumulation Above . rows
 
 And then to tails
 
@@ -247,7 +247,7 @@ And then to tails
 \begin{lemma}[Accumulation lemma]
 \label{lem:accum}
 Certain reduction computations can be re-expressed into accumulations:
-< map (columnReduce oplus)  . tops     = rows  . accumulateCols oplus
+< map (columnReduce oplus)  . tops     = rows  . topAccumulation oplus
 < map (rowReduce oplus)     . lefts    = cols  . accumulateRows oplus
 < map (columnReduce oplus)  . bottoms  = rows  . accumulateColsUp oplus
 < map (rowReduce oplus)     . rights   = cols  . accumulateRowsLeft oplus
@@ -262,13 +262,13 @@ Given the orthogonal reduction rules
 < map (rowReduce oplus)     . bottoms  = bottoms  . rowReduce oplus
 
 and the orthogonal accumulation rules
-< map (accumulateCols oplus)  . lefts    = lefts    . accumulateCols oplus
+< map (topAccumulation oplus)  . lefts    = lefts    . topAccumulation oplus
 < map (accumulateRows oplus)  . tops     = tops     . accumulateRows oplus
-< map (accumulateCols oplus)  . rights   = rights   . accumulateCols oplus
+< map (topAccumulation oplus)  . rights   = rights   . topAccumulation oplus
 < map (accumulateRows oplus)  . bottoms  = bottoms  . accumulateRows oplus
 
 By definition of |tops|
-< map (columnReduce oplus) . tops = map (columnReduce oplus) . accumulateCols Above . rows
+< map (columnReduce oplus) . tops = map (columnReduce oplus) . topAccumulation Above . rows
 
 From which, given the reduction and accumulation occur in the same dimension
 it is simple to see the first accumulation equality holds. Similarly for the
@@ -407,7 +407,7 @@ Another way:
 > r  = foldl max 0 . Prelude.map area . filter filled . bag . rects
 >   where
 >     bag = reduce (++) (++) . map (\ x -> [x])
-> r' = reduce max max . map h . rows . accumulateCols ostar
+> r' = reduce max max . MaxRectangle.map h . rows . topAccumulation ostar
 >   where
 >     h = foldl max 0 . Prelude.map f . segs
 >     f x = width x * reduce min min x
@@ -479,7 +479,7 @@ If for some |g|, |ostar|
 then
 
 < reduce (oplus) (oplus) . map f . rects =
-<    reduce (oplus) (oplus) . map h . rows . accumulateCols (ostar)
+<    reduce (oplus) (oplus) . map h . rows . topAccumulation (ostar)
 <   where
 <     h = reduce (oplus) (oplus) . map g . vsegs
 \end{lemma}
@@ -534,7 +534,7 @@ Now we argue:
 = {- map distributivity; |h = reduce oplus oplus . map g . vsegs| -}
   reduce (oplus) (oplus) . map h . map (columnReduce (ostar)) . tops
 = {- accumulation lemma -}
-  reduce (oplus) (oplus) . map h . rows . accumulateCols (ostar)
+  reduce (oplus) (oplus) . map h . rows . topAccumulation (ostar)
 \end{spec}
 
 
@@ -597,7 +597,7 @@ can be expressed as
 
 can be expressed as
 
-< reduce max max . map (reduce max max . map g . vsegs) . rows . accumulateCols ostar
+< reduce max max . map (reduce max max . map g . vsegs) . rows . topAccumulation ostar
 \end{corollary}
 
 \begin{proof}
@@ -631,7 +631,7 @@ element count of |x| which is equal to its area.
 
 can be expressed as
 
-< foldl max 0 . map (foldl max 0 . map (\ x -> length x * foldl min undefined x) . segs) . rows . accumulateCols ostar
+< foldl max 0 . map (foldl max 0 . map (\ x -> length x * foldl min undefined x) . segs) . rows . topAccumulation ostar
 \end{theorem}
 
 \begin{proof}\hfill
@@ -647,11 +647,11 @@ can be expressed as
 
 = {- Rectangle decomposition -}
 
-  foldl max 0 . map (foldl max 0 . map (\ x -> width x * foldl min undefined x) . vsegs) . rows . accumulateCols ostar
+  foldl max 0 . map (foldl max 0 . map (\ x -> width x * foldl min undefined x) . vsegs) . rows . topAccumulation ostar
 
 = {- On lists -}
 
-  foldl max 0 . map (foldl max 0 . map (\ x -> length x * foldl min undefined x) . segs) . rows . accumulateCols ostar
+  foldl max 0 . map (foldl max 0 . map (\ x -> length x * foldl min undefined x) . segs) . rows . topAccumulation ostar
 \end{spec}
 \end{proof}
 
