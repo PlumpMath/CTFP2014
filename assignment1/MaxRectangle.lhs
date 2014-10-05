@@ -16,28 +16,34 @@
 \newtheorem{example}{Example}
 
 \begin{document}
-\section{Max Rectangle}
-
 \textit{By Daniel O, Irene, Pablo, Fabian and Jeremy.}
 
+\section{Max Rectangle}
+Given an array |x| with elements from the set of booleans. We are to find an
+efficient algorithm that computes the area of the largest rectangle of |x|
+whose elements all are true.
+
 > module MaxRectangle where
+
+\subsection{Prerequisites}
 
 > import qualified Prelude
 > import Prelude hiding (Left, map, zipWith)
 > import qualified Data.List
 
-
+We define a type class \emph{Binoid},
 
 > class Binoid a where
 >   oplus :: a -> a -> a
 >   otimes :: a -> a -> a
 
-Satifsies
-< (a oplus b) oplus c == a oplus (b oplus c)
-< (a otimes b) otimes c == a otimes (b otimes c)
+with the additional requirement that |oplus| and |otimes| are associative and
+also satisfy the equation
 
-Satisfies
-< (a oplus b) otimes (c oplus d) == (a otimes c) oplus (b otimes d)
+< (a oplus b) otimes (c oplus d) = (a otimes c) oplus (b otimes d)
+
+We can define an example binoid with the |left| and |right| functions (similar
+to |fst| and |snd| but for curried functions)
 
 > left, right :: a -> a -> a
 > left  a _ = a
@@ -46,16 +52,23 @@ Satisfies
 > newtype Left a = Left { mkLeft :: a }
 
 > instance Binoid (Left a) where
->   oplus  = left
+>   oplus = left
 >   otimes = left
+
+We also need a partial function |dot| which only is defined if its arguments
+are equal
 
 > dot :: Eq a => a -> a -> a
 > dot a b = if a == b then a else undefined
 
+\subsection{Arrays}
+
+A multidimensional array can be defined as
+
 > data Array a
 >   = Singleton a
 >   | Above (Array a) (Array a)
->   | Beside (Array a ) (Array a)
+>   | Beside (Array a) (Array a)
 >   deriving Show
 
 > (|||) :: Array a -> Array a -> Array a
@@ -67,6 +80,10 @@ Satisfies
 > lift :: a -> Array a
 > lift a = Singleton a
 
+Two functions |width| and |height| defines restrictions for well-formedness of
+an array. |Above x y| is defined iff |width x == width y| and |Beside x y| is
+defined iff |height x == height y|.
+
 > height :: Array a -> Int
 > height (Singleton _) = 1
 > height (Above x y)   = height x + height y
@@ -77,17 +94,26 @@ Satisfies
 > width (Above x y)   = width x `dot` width y
 > width (Beside x y)  = width x + width y
 
-> ex :: Array Int
-> ex = (lift 1 |-| lift 3) ||| (lift 2 |-| lift 4) ||| (lift 5 |-| lift 6)
+\subsection{Map}
+The array homomorphism |map| is given by the equations
 
 > map :: (a -> b) -> Array a -> Array b
 > map f (Singleton a) = Singleton $ f a
 > map f (Above x y)   = map f x `Above` map f y
 > map f (Beside x y)  = map f x `Beside` map f y
 
-so that (map distributivity)
+Distributivity of |map| holds the same for arrays as for lists,
 
 < map (f . g) = map f . map g
+
+We also have that
+
+< height (map f x) = height x
+< width (map f x) = width x
+
+\subsection{Reduce}
+
+Array reduction is defined using two operators and the equations
 
 > reduce :: (a -> a -> a) -> (a -> a -> a) -> Array a -> a
 > reduce f g (Singleton a) = a
