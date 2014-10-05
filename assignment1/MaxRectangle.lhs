@@ -10,6 +10,7 @@
 \usepackage{amsmath}
 \usepackage{amsthm}
 \usepackage{parskip}
+\newtheorem{definition}{Definition}
 \newtheorem{lemma}{Lemma}
 \newtheorem{theorem}{Theorem}
 \newtheorem{corollary}{Corollary}
@@ -65,6 +66,9 @@ are equal
 
 A multidimensional array can be defined as
 
+\begin{definition}[Array]\hfill
+\label{def:array}
+
 > data Array a
 >   = Singleton a
 >   | Above (Array a) (Array a)
@@ -93,6 +97,9 @@ defined iff |height x == height y|.
 > width (Singleton _) = 1
 > width (Above x y)   = width x `dot` width y
 > width (Beside x y)  = width x + width y
+
+\end{definition}
+
 
 \subsection{Map}
 The array homomorphism |map| is given by the equations
@@ -345,8 +352,6 @@ which is the RHS.
 \end{example}
 
 
-4.11 Rectangles
-
 Top-lefts of an array.  Analogous to ``inits'' for lists.
 
 > topls :: Array a -> Array (Array a)
@@ -381,6 +386,9 @@ Vertical segments:
 > vsegs :: Array a -> Array (Array a)
 > vsegs = reduce (|-|) (|||) . map rights . lefts
 
+\begin{definition}[Rectangle]
+\label{def:rectangle}
+
 One way of defining the rectangles:
 
 > rects :: Array a -> Array (Array a)
@@ -391,6 +399,7 @@ Another way:
 
 > rects = reduce (|-|) (|||) . map hsegs . vsegs
 
+\end{definition}
 
 
 
