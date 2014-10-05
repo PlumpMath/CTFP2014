@@ -411,22 +411,6 @@ Another way:
 > filled :: Array Int -> Bool
 > filled = reduce (&&) (&&) . map (== 1)
 
-> -- See lecture notes 4.14 Application (R)
-> r, r' :: Array Int -> Int
-> r  = foldl max 0 . Prelude.map area . filter filled . bag . rects
->   where
->     bag = reduce (++) (++) . map (\ x -> [x])
-> r' = reduce max max . map h . rows . accumulateCols ostar
->   where
->     h = foldl max 0 . Prelude.map f . segs
->     f x = width x * reduce min min x
->
->     oplus 0 _ = 0
->     oplus _ 0 = 0
->     oplus a b = a + b
->
->     ostar a b = max (a `oplus` b) b
-
 \begin{lemma}[BRTL rule]
 \label{lem:brtl}
 We will prove that
@@ -602,11 +586,25 @@ can be expressed as
 
 
 \begin{corollary}\hfill
-< reduce max max . map (reduce oplus oplus) . rects
+\label{lem:b}
+
+> b = reduce max max . map (reduce oplus oplus) . rects
+>   where
+>     oplus 0 _ = 0
+>     oplus _ 0 = 0
+>     oplus a b = a + b
 
 can be expressed as
 
-< reduce max max . map (reduce max max . map g . vsegs) . rows . accumulateCols ostar
+> b' = reduce max max . map (reduce max max . map g . vsegs) . rows . accumulateCols ostar
+>   where
+>     oplus 0 _ = 0
+>     oplus _ 0 = 0
+>     oplus a b = a + b
+>
+>     g x = width x * reduce min min x
+>     ostar a b = max (a `oplus` b) b
+
 \end{corollary}
 
 \begin{proof}
@@ -615,6 +613,8 @@ Apply Lemma~\ref{lem:rectangle-decomposition} to Lemma~\ref{lem:a}.
 
 
 \begin{lemma}[Filter erasure]\hfill
+\label{lem:filter-erasure}
+
 < reduce oplus oplus x = if filled x then area x else 0
 <   where
 <     oplus 0 _ = 0
@@ -635,33 +635,73 @@ element count of |x| which is equal to its area.
 \end{proof}
 
 
-\begin{theorem}\hfill
-< foldl max 0 . map area . filter filled . rects
+\begin{theorem}
+\label{thm:r=r'}
+
+The MaxRectangle algorithm
+
+> r  = foldl max 0 . Prelude.map area . filter filled . bag . rects
+>   where
+>     bag = reduce (++) (++) . map (\ x -> [x])
 
 can be expressed as
 
-< foldl max 0 . map (foldl max 0 . map (\ x -> length x * foldl min undefined x) . segs) . rows . accumulateCols ostar
+> r' = foldl max 0 . Prelude.map h . listrows . accumulateCols ostar
+>   where
+>     h = foldl max 0 . Prelude.map f . segs
+>     f x = length x * foldl min 1 x
+>
+>     oplus 0 _ = 0
+>     oplus _ 0 = 0
+>     oplus a b = a + b
+>
+>     ostar a b = max (a `oplus` b) b
+
 \end{theorem}
 
-\begin{proof}\hfill
-\def\commentbegin{\quad\{\ }
-\def\commentend{\}}
+\begin{proof}
+We start with the naive solution of MaxRectangle.
 
-\begin{spec}
-  foldl max 0 . map area . filter filled . rects
+< foldl max 0 . Prelude.map area . filter filled . bag . rects
 
-= {- Filter erasure (OBS: the result for empty arrays is zero, was -∞ before) -}
+Because of the very restrictive set of array elements we can apply
+lemma~\ref{lem:filter-erasure} and, thereby, erase the filter step
+from the algorithm.
 
-  reduce max max . map (reduce oplus oplus) . rects
+< reduce max max . map (reduce oplus oplus) . rects
 
-= {- Rectangle decomposition -}
+Here, we accept that the result for empty arrays will be zero, while
+it used to be the negative infinity with the previous implementation.
+From the standpoint of the empty array containing the empty rectangle
+with area 0 this makes quite some sense.
 
-  foldl max 0 . map (foldl max 0 . map (\ x -> width x * foldl min undefined x) . vsegs) . rows . accumulateCols ostar
+Now, lemma~\ref{lem:b} as a particular instance of rectangle
+decomposition says that we can also save us from computing all
+rectangles in the input array. It is enough to first look at the
+columns and then at the rows.
 
-= {- On lists -}
+< reduce max max
+<   . map (reduce max max
+<            . map (\ x -> width x * reduce min min x)
+<            . vsegs)
+<   . rows
+<   . accumulateCols ostar
 
-  foldl max 0 . map (foldl max 0 . map (\ x -> length x * foldl min undefined x) . segs) . rows . accumulateCols ostar
-\end{spec}
+The last step doesn't seem obvious at all and is, therefore, split up
+into several lemmata.
+
+Lastly, we turn our backs on arrays in favor of lists as soon as
+possible in the implementation. This is, at least intuitively,
+correct since rows are arrays of height 1.
+
+< foldl max 0
+<   . Prelude.map (foldl max 0
+<                    . Prelude.map (\ x -> length x * foldl min 1 x)
+<                    . segs)
+<   . listrows
+<   . accumulateCols ostar
+
+This concludes our proof.
 \end{proof}
 
 
@@ -670,6 +710,16 @@ The largest filled rectangle can be computed in linear time.
 \end{corollary}
 
 \begin{proof}
-missing
+Since |r'| from theorem~\ref{thm:r=r'} is in some sense equivalent to
+the naive solution |r| of MaxRectangle, it computes the largest
+filled rectangle in $0,1$-arrays.
+
+Furthermore, the operator |otimes| is computable in constant time
+and, therefore, the accumulation part takes a number of steps
+proportional to the number of elements in the input array. |h| can be
+shown to be computable in linear time (missing) as well. Since
+|foldl| and |map|, which are also used to implement |listrows|, need
+only time linear in the length of their input, |r'| as a whole is
+computable in time linear in the number of array elements.
 \end{proof}
 \end{document}
