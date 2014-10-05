@@ -596,9 +596,6 @@ can be expressed as
 
 can be expressed as
 
-<<<<<<< HEAD
-< reduce max max . map (reduce max max . map g . vsegs) . rows . topAccumulation ostar
-=======
 > b' = reduce max max . map (reduce max max . map g . vsegs) . rows . accumulateCols ostar
 >   where
 >     oplus 0 _ = 0
@@ -608,7 +605,6 @@ can be expressed as
 >     g x = width x * reduce min min x
 >     ostar a b = max (a `oplus` b) b
 
->>>>>>> 34299656d7132605cb3e560ee113fc494a5d0191
 \end{corollary}
 
 \begin{proof}
@@ -644,14 +640,9 @@ element count of |x| which is equal to its area.
 
 The MaxRectangle algorithm
 
-<<<<<<< HEAD
-< foldl max 0 . map (foldl max 0 . map (\ x -> length x * foldl min undefined x) . segs) . rows . topAccumulation ostar
-\end{theorem}
-=======
 > r  = foldl max 0 . Prelude.map area . filter filled . bag . rects
 >   where
 >     bag = reduce (++) (++) . map (\ x -> [x])
->>>>>>> 34299656d7132605cb3e560ee113fc494a5d0191
 
 can be expressed as
 
@@ -673,20 +664,12 @@ We start with the naive solution of MaxRectangle.
 
 < foldl max 0 . Prelude.map area . filter filled . bag . rects
 
-<<<<<<< HEAD
-  foldl max 0 . map (foldl max 0 . map (\ x -> width x * foldl min undefined x) . vsegs) . rows . topAccumulation ostar
-=======
 Because of the very restrictive set of array elements we can apply
 lemma~\ref{lem:filter-erasure} and, thereby, erase the filter step
 from the algorithm.
->>>>>>> 34299656d7132605cb3e560ee113fc494a5d0191
 
 < reduce max max . map (reduce oplus oplus) . rects
 
-<<<<<<< HEAD
-  foldl max 0 . map (foldl max 0 . map (\ x -> length x * foldl min undefined x) . segs) . rows . topAccumulation ostar
-\end{spec}
-=======
 Here, we accept that the result for empty arrays will be zero, while
 it used to be the negative infinity with the previous implementation.
 From the standpoint of the empty array containing the empty rectangle
@@ -719,7 +702,6 @@ correct since rows are arrays of height 1.
 <   . accumulateCols ostar
 
 This concludes our proof.
->>>>>>> 34299656d7132605cb3e560ee113fc494a5d0191
 \end{proof}
 
 
