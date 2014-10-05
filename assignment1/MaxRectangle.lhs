@@ -12,6 +12,7 @@
 \newtheorem{lemma}{Lemma}
 \newtheorem{theorem}{Theorem}
 \newtheorem{corollary}{Corollary}
+\newtheorem{example}{Example}
 
 \begin{document}
 \section{Max Rectangle}
@@ -278,8 +279,7 @@ Where ostar is defined as:
 missing
 \end{proof}
 
-An example case:
-
+\begin{example}[Horner's rule]
 \begin{equation*}
 x = \begin{pmatrix}
     1 & 2 \\
@@ -309,8 +309,7 @@ and finally:
 < reduce odot odot (rowReduce ostar x)
 
 which is the RHS.
-
-
+\end{example}
 
 
 4.11 Rectangles
@@ -320,8 +319,7 @@ Top-lefts of an array.  Analogous to ``inits'' for lists.
 > topls :: Array a -> Array (Array a)
 > topls = reduce (|-|) (|||) . map tops . lefts
 
-Example:
-
+\begin{example}[Top-lefts of an array]
 \[
 topls \begin{pmatrix}
 1 & 2 & 3 \\
@@ -333,6 +331,7 @@ topls \begin{pmatrix}
 \begin{pmatrix} 1\\4\\7\\\end{pmatrix} & \begin{pmatrix}1&2\\4&5\\7&8\\\end{pmatrix} & \begin{pmatrix}1&2&3\\4&5&6\\7&8&9\\\end{pmatrix} \\
 \end{pmatrix}
 \]
+\end{example}
 
 Bottom rights, like ``tails''.
 
