@@ -9,6 +9,7 @@
 
 \usepackage{amsmath}
 \usepackage{amsthm}
+\usepackage{parskip}
 \newtheorem{lemma}{Lemma}
 \newtheorem{theorem}{Theorem}
 \newtheorem{corollary}{Corollary}
