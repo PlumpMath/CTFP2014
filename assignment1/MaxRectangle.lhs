@@ -208,29 +208,29 @@ We define downward and rightward accumulations
 >   where xs = topAccumulation f x
 > topAccumulation f (Beside x y)             = Beside (topAccumulation f x) (topAccumulation f y)
 
-> accumulateRows :: (a -> a -> a) -> Array a -> Array a
-> accumulateRows f (Singleton z)             = Singleton z
-> accumulateRows f (Beside x (Singleton y))  = Beside xs (Singleton (f (topright xs) y))
->   where xs = accumulateRows f x
-> accumulateRows f (Above x y)               = Above (accumulateRows f x) (accumulateRows f y)
+> leftAccumulation :: (a -> a -> a) -> Array a -> Array a
+> leftAccumulation f (Singleton z)             = Singleton z
+> leftAccumulation f (Beside x (Singleton y))  = Beside xs (Singleton (f (topright xs) y))
+>   where xs = leftAccumulation f x
+> leftAccumulation f (Above x y)               = Above (leftAccumulation f x) (leftAccumulation f y)
 
 Satisfying
-< listrows . (accumulateRows f)  == map (scanl f) . listrows
-< listcols . (topAccumulation f)  == map (scanl f) . listcols
+< listrows . (leftAccumulation f)  == map (scanl f) . listrows
+< listcols . (topAccumulation f)   == map (scanl f) . listcols
 
 Similarly, we can define accumulations in the opposite directions (i.e.: upwards and leftwards)
 
-> accumulateColsUp :: (a -> a -> a) -> Array a -> Array a
-> accumulateColsUp f (Singleton z)            = Singleton z
-> accumulateColsUp f (Above (Singleton y) x)  = Above (Singleton (f (topright xs) y)) xs
->   where xs = accumulateColsUp f x
-> accumulateColsUp f (Beside x y)             = Beside (accumulateColsUp f x) (accumulateColsUp f y)
+> bottomAccumulation :: (a -> a -> a) -> Array a -> Array a
+> bottomAccumulation f (Singleton z)            = Singleton z
+> bottomAccumulation f (Above (Singleton y) x)  = Above (Singleton (f (topright xs) y)) xs
+>   where xs = bottomAccumulation f x
+> bottomAccumulation f (Beside x y)             = Beside (bottomAccumulation f x) (bottomAccumulation f y)
 
-> accumulateRowsLeft :: (a -> a -> a) -> Array a -> Array a
-> accumulateRowsLeft f (Singleton z)             = Singleton z
-> accumulateRowsLeft f (Beside (Singleton y) x)  = Beside (Singleton (f (bottomleft xs) y)) xs
->   where xs = accumulateRowsLeft f x
-> accumulateRowsLeft f (Above x y)               = Above (accumulateRowsLeft f x) (accumulateRowsLeft f y)
+> rightAccumulation :: (a -> a -> a) -> Array a -> Array a
+> rightAccumulation f (Singleton z)             = Singleton z
+> rightAccumulation f (Beside (Singleton y) x)  = Beside (Singleton (f (bottomleft xs) y)) xs
+>   where xs = rightAccumulation f x
+> rightAccumulation f (Above x y)               = Above (rightAccumulation f x) (rightAccumulation f y)
 
 
 \subsection{Segments: tops \& bottoms, lefts \& rights}
@@ -238,7 +238,7 @@ Similarly, we can define accumulations in the opposite directions (i.e.: upwards
 In a similar fashion to inits
 
 > lefts :: Array a -> Array (Array a)
-> lefts = accumulateRows Beside . cols
+> lefts = leftAccumulation Beside . cols
 
 > tops :: Array a -> Array (Array a)
 > tops = topAccumulation Above . rows
@@ -246,18 +246,18 @@ In a similar fashion to inits
 And then to tails
 
 > rights :: Array a -> Array (Array a)
-> rights = accumulateRowsLeft Beside . cols
+> rights = rightAccumulation Beside . cols
 
 > bottoms :: Array a -> Array (Array a)
-> bottoms = accumulateColsUp Above . rows
+> bottoms = bottomAccumulation Above . rows
 
 \begin{lemma}[Accumulation lemma]
 \label{lem:accum}
 Certain reduction computations can be re-expressed into accumulations:
 < map (columnReduce oplus)  . tops     = rows  . topAccumulation oplus
-< map (rowReduce oplus)     . lefts    = cols  . accumulateRows oplus
-< map (columnReduce oplus)  . bottoms  = rows  . accumulateColsUp oplus
-< map (rowReduce oplus)     . rights   = cols  . accumulateRowsLeft oplus
+< map (rowReduce oplus)     . lefts    = cols  . leftAccumulation oplus
+< map (columnReduce oplus)  . bottoms  = rows  . bottomAccumulation oplus
+< map (rowReduce oplus)     . rights   = cols  . rightAccumulation oplus
 
 \end{lemma}
 
@@ -269,10 +269,10 @@ Given the orthogonal reduction rules
 < map (rowReduce oplus)     . bottoms  = bottoms  . rowReduce oplus
 
 and the orthogonal accumulation rules
-< map (topAccumulation oplus)  . lefts    = lefts    . topAccumulation oplus
-< map (accumulateRows oplus)  . tops     = tops     . accumulateRows oplus
-< map (topAccumulation oplus)  . rights   = rights   . topAccumulation oplus
-< map (accumulateRows oplus)  . bottoms  = bottoms  . accumulateRows oplus
+< map (topAccumulation oplus)   . lefts    = lefts    . topAccumulation oplus
+< map (leftAccumulation oplus)  . tops     = tops     . leftAccumulation oplus
+< map (topAccumulation oplus)   . rights   = rights   . topAccumulation oplus
+< map (leftAccumulation oplus)  . bottoms  = bottoms  . leftAccumulation oplus
 
 By definition of |tops|
 < map (columnReduce oplus) . tops = map (columnReduce oplus) . topAccumulation Above . rows
@@ -282,7 +282,7 @@ it is simple to see the first accumulation equality holds. Similarly for the
 third equality.
 
 In an analogue way, for the second equality, the definition of |lefts| means
-< map (rowReduce oplus) . lefts = map (rowReduce oplus) . accumulateRows Beside . cols
+< map (rowReduce oplus) . lefts = map (rowReduce oplus) . leftAccumulation Beside . cols
 
 Again with reductions and accumulation happening in the same dimension (as
 happens in the fourth equality).
