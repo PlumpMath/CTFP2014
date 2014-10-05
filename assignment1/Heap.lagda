@@ -30,38 +30,89 @@
 module Heap where
 
 open import Level using () renaming (zero to lzero)
+open import Data.Unit
+open import Data.Empty
 open import Data.Nat
 open import Data.Bool
 open import Data.Product
 open import Data.List as L
 open import Data.Vec as V
 open import Function
-open import Relation.Binary
-open import Relation.Binary.Core
+open import Relation.Binary.Indexed
+open import Relation.Binary using (DecTotalOrder)
 open import Relation.Nullary.Core
+open import Relation.Binary.PropositionalEquality as PropEq
+open import Relation.Binary.PropositionalEquality.Core
+import Relation.Binary.EqReasoning as EqR
 \end{code}
 %endif
 
 \section{Trees}
 
 \begin{code}
-data Tree (A : Set) : Bool × Bool → Set where
+data Tree A : Bool × Bool → Set where
   ⟨⟩  : Tree A (false , false)
   ⟨_⟩ : A → Tree A (true , true)
   _↙_ : ∀ {lx rx ry} → Tree A (lx , rx) → Tree A (true , ry) → Tree A (false , ry)
   _↘_ : ∀ {lx ly ry} → Tree A (lx , true) → Tree A (ly , ry) → Tree A (lx , false)
 
+data _≈h_ {A : Set} : Rel (Tree A) lzero where
+  nil            :                              ⟨⟩ ≈h ⟨⟩
+  singleton           : ∀ {a} → a ≡ a →           ⟨ a ⟩ ≈h ⟨ a ⟩
+  left           : ∀ {lx rx ry a b}
+    → a ≡ a → b ≡ b
+      → (_↙_ {lx = lx}{rx = rx}{ry = ry} a b)      ≈h (a ↙ b)
+  right          : ∀ {lx ly ry a b}
+    → a ≡ a → b ≡ b
+      → (_↘_ {lx = lx}{ly = ly}{ry = ry} a b)      ≈h (a ↘ b)
+  left-identity  : ∀ {ry a} → (_↙_ {ry = ry} ⟨⟩ a) ≈h a
+  right-identity : ∀ {lx a} → (_↘_ {lx = lx} a ⟨⟩) ≈h a
+  assoc          : ∀ {lx rx ly ry a b c} →
+    (_↙_ {lx = lx}{rx = rx} a
+      (_↘_ {ly = ly} {ry = ry} b c))               ≈h ((a ↙ b) ↘ c)
+
+hsym : (A : Set) → Symmetric (Tree A) _≈h_
+hsym A {.false , .false} {.false , .false} nil = nil
+hsym A {.true , .true} {.true , .true} (singleton x) = singleton refl
+hsym A {.false , proj₂} {.false , .proj₂} (left x x₁) = left refl refl
+hsym A {proj₁ , .false} {.proj₁ , .false} (right x x₁) = right refl refl
+hsym A {.false , .true} {.true , .true} {j = ⟨ x ⟩} left-identity = {!!}
+hsym A {.false , .false} {.true , .false} {j = j ↘ j₁} left-identity = {!!}
+hsym A {proj₁ , .false} {.proj₁ , .true} right-identity = {!!}
+hsym A {.false , .false} {.false , .false} assoc = {!!}
+
+htrans : (A : Set) → Transitive (Tree A) _≈h_
+htrans A x y = {!!}
+
+HTreeS : Set → Setoid (Bool × Bool) lzero lzero
+HTreeS A = record
+  { Carrier = Tree A
+  ; _≈_ = _≈h_
+  ; isEquivalence = record
+    { refl = λ { {x = ⟨⟩}    → nil
+               ; {x = ⟨ x ⟩} → singleton refl
+               ; {x = x ↙ y} → left refl refl
+               ; {x = x ↘ y} → right refl refl }
+    ; sym = hsym A
+    ; trans = htrans A } }
+
+
 HTree : Set → Set
 HTree A = Σ (Bool × Bool) (λ zz → Tree A zz)
 
-hlift : ∀ {lr A} → Tree A lr → HTree A
-hlift {proj₁ , proj₂} x = (proj₁ , proj₂) , x
+_↙'_ :  ∀ {A} → HTree A → HTree A → HTree A
+(aa , a) ↙' ((true , bb) , b) = (false , bb) , a ↙ b
+(aa , a) ↙' ((false , bb) , b) = (false , bb) , b -- dummy
+
+_↘'_ :  ∀ {A} → HTree A → HTree A → HTree A
+((aa , true) , a) ↘' (bb , b) = (aa , false) , a ↘ b
+((aa , false) , a) ↘' (bb , b) = (aa , false) , a -- dummy
 \end{code}
 
 \section{Maps and reduces}
 
 \begin{code}
-map-tree : ∀ {A B lr} → (A → B) → Tree A lr → Tree B lr
+map-tree : ∀ {lr A B} → (A → B) → Tree A lr → Tree B lr
 map-tree f ⟨⟩ = ⟨⟩
 map-tree f ⟨ x ⟩ = ⟨ f x ⟩
 map-tree f (x ↙ y) = map-tree f x ↙ map-tree f y
@@ -111,7 +162,7 @@ heaporder = reduce-tree (record { ⊕ = {!!} ; ⊗ = {!!} ; e = [] }) ∘ map-tr
 \section{Accumulations}
 
 \begin{code}
-up : ∀ {A lr} → Reducer A → A → Tree A lr → Tree A lr
+up : ∀ {A aa} → Reducer A → A → Tree A aa → Tree A aa
 up r d ⟨⟩ = ⟨⟩
 up r d ⟨ a ⟩ = ⟨ a ⟩
 up r d (x ↙ ⟨ a ⟩) = up r d x ↙ ⟨ Reducer.⊕ r (label d (up r d x)) a ⟩
@@ -119,27 +170,31 @@ up r d (x ↙ (⟨ a ⟩ ↘ y)) = up r d x ↙ (⟨ Reducer.⊕ r (label d (up 
 up r d (⟨ a ⟩ ↘ y) = ⟨ Reducer.⊗ r a (label d (up r d y)) ⟩ ↘ up r d y
 up r d ((x ↙ ⟨ a ⟩) ↘ y) = up r d x ↙ (⟨ Reducer.⊕ r (label d (up r d x)) (Reducer.⊗ r a (label d (up r d y))) ⟩ ↘ up r d y)
 
-_↙'_ :  ∀ {A} → HTree A → HTree A → HTree A
-a ↙' b = {!!}
-
-_↘'_ :  ∀ {A} → HTree A → HTree A → HTree A
-a ↘' b = {!!}
-
-subtrees : ∀ {A lr} → A → Tree A lr → Tree (HTree A) lr
+subtrees : ∀ {lr A} → A → Tree A lr → Tree (HTree A) lr
 subtrees d = up (record { ⊕ = _↙'_ ; ⊗ = _↘'_ ; e = (true , true) , ⟨ d ⟩ }) ((true , true) , ⟨ d ⟩) ∘ map-tree (λ x → (true , true) , ⟨ x ⟩)
 
 subtrees-inverse : ∀ {A}{d : A}{x} → map-tree (label d ∘ proj₂) (subtrees d x) ≡ x
 subtrees-inverse = {!!}
 
-accum-lemma : ∀ {A}{d : A}{r}{x} → up r d x ≡ (map-tree (reduce-tree r ∘ proj₂) ∘ subtrees d) x
-accum-lemma = {!!}
+module AccumLemma {A : Set} where
+
+  accum-lemma : ∀ {A}{d : A}{r}{x} → up r d x ≡ (map-tree (reduce-tree r ∘ proj₂) ∘ subtrees d) x
+  accum-lemma {x = ⟨⟩} = refl
+  accum-lemma {x = ⟨⟩ ↙ (⟨ a ⟩ ↘ ⟨⟩)} = {!!}
+  accum-lemma {x = ⟨⟩ ↙ (⟨ a ⟩ ↘ ⟨ x ⟩)}  = {!!}
+  accum-lemma {x = ⟨⟩ ↙ (⟨ a ⟩ ↘ (x ↙ y))} = {!!}
+  accum-lemma {x = ⟨⟩ ↙ (⟨ a ⟩ ↘ (x ↘ y))} = {!!}
+  accum-lemma {x = ⟨ x ⟩ ↙ (⟨ a ⟩ ↘ y)} = {!!}
+  accum-lemma {x = (x ↙ x₁) ↙ (⟨ a ⟩ ↘ x₃)} = {!!}
+  accum-lemma {x = (x ↘ x₁) ↙ (⟨ a ⟩ ↘ x₃)} = {!!}
+  accum-lemma {x = x ↘ x₁} = {!!}
 \end{code}
 
 \section{Building a heap}
 
 \begin{code}
-module HeapOrder {ℓ₁ ℓ₂}{ord : DecTotalOrder Level.zero ℓ₁ ℓ₂} where
-  open DecTotalOrder ord renaming (_≤_ to _⊑_; _≤?_ to _⊑?_; Carrier to A)
+module HeapOrder {ℓ₁ ℓ₂}{ord : DecTotalOrder lzero ℓ₁ ℓ₂} where
+  open Relation.Binary.DecTotalOrder ord renaming (_≤_ to _⊑_; _≤?_ to _⊑?_; Carrier to A)
 
   -- doesn't termination check because the checker doesn't see associativity well
   -- playing with parentheses placement puts termination errors into different places
