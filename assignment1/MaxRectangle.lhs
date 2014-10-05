@@ -596,7 +596,7 @@ can be expressed as
 
 can be expressed as
 
-> b' = reduce max max . map (reduce max max . map g . vsegs) . rows . accumulateCols ostar
+> b' = reduce max max . map (reduce max max . map g . vsegs) . rows . topAccumulation ostar
 >   where
 >     oplus 0 _ = 0
 >     oplus _ 0 = 0
@@ -646,7 +646,7 @@ The MaxRectangle algorithm
 
 can be expressed as
 
-> r' = foldl max 0 . Prelude.map h . listrows . accumulateCols ostar
+> r' = foldl max 0 . Prelude.map h . listrows . topAccumulation ostar
 >   where
 >     h = foldl max 0 . Prelude.map f . segs
 >     f x = length x * foldl min 1 x
@@ -685,7 +685,7 @@ columns and then at the rows.
 <            . map (\ x -> width x * reduce min min x)
 <            . vsegs)
 <   . rows
-<   . accumulateCols ostar
+<   . topAccumulation ostar
 
 The last step doesn't seem obvious at all and is, therefore, split up
 into several lemmata.
@@ -699,7 +699,7 @@ correct since rows are arrays of height 1.
 <                    . Prelude.map (\ x -> length x * foldl min 1 x)
 <                    . segs)
 <   . listrows
-<   . accumulateCols ostar
+<   . topAccumulation ostar
 
 This concludes our proof.
 \end{proof}
