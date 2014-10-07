@@ -16,5 +16,8 @@
 %format \\ = "\ssearrow"
 
 \begin{document}
+\title{Converting from Sequences to Heaps}
+\author{People in the CTFP Course}
+\maketitle
 %include HeapInorder.lhs
 \end{document}
