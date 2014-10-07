@@ -1,20 +1,3 @@
-\documentclass{article}
-\usepackage{amsmath}
-\usepackage{amsthm}
-\newtheorem{theorem}{Theorem}
-\newtheorem{definition}{Definition}
-\newtheorem{lemma}{Lemma}
-\newtheorem{corollary}{Corollary}
-%include polycode.fmt
-
-%format +++ = "\oplus "
-%format *** = "\otimes "
-%format < = "\langle "
-%format > = "\rangle "
-%format forall = "\forall "
-%format /\ = "\wedge "
-
-\begin{document}
 \begin{definition}
 The implementation of the heap build function from the lecture notes.
 
@@ -74,4 +57,3 @@ in fact heaps.
 This follows from the fact that the result holds for |heap| which was
 shown to be equivalent to |heap'|.
 \end{proof}
-\end{document}
