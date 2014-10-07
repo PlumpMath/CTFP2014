@@ -3,6 +3,8 @@
 \usepackage{amsmath}
 \usepackage{amsthm}
 \usepackage{hyperref}
+\usepackage[numbers]{natbib}
+
 \newcommand\doubleplus{+\kern-1.3ex+\kern0.8ex}
 \theoremstyle{definition}
 \newtheorem{definition}{Definition}
@@ -18,30 +20,41 @@ auxiliary functions.
 \begin{code}
 import Data.List
 import Data.Ord
-import Test.QuickCheck
 
 maxBy :: Ord b => (a -> b) -> a -> a -> a
 maxBy f a b | f a >= f b = a
             | otherwise = b
 \end{code}
 
-Following the paper, we use the following definition of `segs':
+Following Bird's paper \citep{Bird1987}, we use the following definition of $segs$:
 
 \begin{code}
 segs = map (foldr (++) [] . tails) . inits
 \end{code}
 
-The paper talks about computing the lengths of segments of the form:
+The function returns all segments of a finite list.
+
+The paper talks about computing longest segment of a list, 
+which satisfy some property $p$, using functions:
 
 \begin{code}
-maxseg :: ([a] -> Bool) -> [a] -> [a]
-maxseg p = foldr (maxBy length) [] . filter p . segs
-
+maxinit p = foldr (maxBy length) [] . filter p . inits
 maxtail p = foldr (maxBy length) [] . filter p . tails
-
+maxseg p = foldr (maxBy length) [] . filter p . segs
 \end{code}
 
+These functions all have the same type: \[maxseg :: ([a] \to Bool) \to [a] \to [a] \]
+and check property for, respectively, initial, final and $all$ segments of a list.
+
+Assuming that checking whether predicate $p$ holds takes $O(n^k)$ steps for a $n$-element list,
+we will need $O(n^{k+1})$ steps for computing $maxinit$ and $maxtail$, 
+and $O(n^{k+2})$ for $maxseg$.
+  
+For example, consider a problem of finding a longest duplicate-free segment of list, 
+specified as follows:  
+ 
 \begin{code}
+-- Our predicate
 nodups :: Eq a => [a] -> Bool
 nodups x = nub x == x
 
@@ -50,8 +63,13 @@ dupfreeseg :: Eq a => [a] -> [a]
 dupfreeseg = maxseg nodups
 \end{code}
 
-To optimize this naive implementation we introduce the
-following properties:
+Since $nodups$ takes $O(n^2)$ steps for a list with $n$ elements, this
+computation requires $O(n^4)$ steps in total.
+
+However, according to Bird \citep{Bird1987}, complexity of longest-segment functions 
+can be reduced by imposing additional restrictions on the predictes involved.
+
+First, we introduce the following properties:
 
 \begin{definition}
 A predicate $p$ is \emph{prefix-closed} iff
@@ -88,23 +106,15 @@ maxseg' p = foldr (maxBy length) [] . scanl (op p) []
 \end{lemma}
 
 If we assume that checking whether $p$ holds, takes $O(n^k)$ steps,
-the preceding lemma allows us to compute it in $O(n^{k+1})$ steps.
+the preceding lemma allows us to compute $maxseg'$ in $O(n^{k+1})$ steps.
 
-To give a concrete example, consider calculating the largest
-duplicate-free segment of a list. Naively, this can be computed
-as:
+So now we can come up with an $O(n^3)$ solution to our problem.
 
 \begin{code}
--- same as maxseg nodups
+-- same as `maxseg nodups`
 naiveNoDups :: Eq a => [a] -> [a]
 naiveNoDups = foldr (maxBy length) [] . filter nodups . segs
-\end{code}
 
-Since $nodups$ takes $O(n^2)$ steps for a list with $n$ elements, this
-computation requires $O(n^4)$ steps in total. If we instead use the result
-from Lemma~\ref{lem:prefixclosed}, we can computer the same result in $O(n^3)$ steps:
-
-\begin{code}
 -- same as maxseg' nodups
 fasterNoDups :: Eq a => [a] -> [a]
 fasterNoDups = foldr (maxBy length) [] . scanl (op nodups) [] 
@@ -138,7 +148,7 @@ maxsegs'' q = foldr (maxBy length) [] . scanl (op' q) []
 
 \end{lemma}
 
-One can show that if q has complexity $O(n^k)$, then
+One can show that if $q$ has complexity $O(n^k)$, then
 we can compute $maxsegs''\ q\ xs$ in $O(n^{k+1})$ steps.
 
 Note that $nodups$ is segment-closed and holds for all singleton lists. Moreover,
@@ -155,6 +165,9 @@ the longest duplicate-free segment of a list in $O(n^2)$ steps as follows:
 quadraticNoDups :: Eq a => [a] -> [a]
 quadraticNoDups = maxsegs'' (\a xs -> all (/= a) xs)
 \end{code}
+
+\bibliographystyle{acm}
+\bibliography{ctfp}
 
 \end{document}
 
