@@ -19,5 +19,5 @@
 \title{Converting from Sequences to Heaps}
 \author{People in the CTFP Course}
 \maketitle
-%include HeapInorder.lhs
+%include HeapInorder.lhsinclude
 \end{document}
