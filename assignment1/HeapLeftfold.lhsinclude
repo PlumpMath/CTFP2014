@@ -54,6 +54,7 @@ in fact heaps.
 \end{corollary}
 
 \begin{proof}
-This follows from the fact that the result holds for |heap| which was
+This follows from the fact that the result holds for
+|heap|~(theorems~\ref{thm:inorder} and~\ref{thm:heaptree}) which was
 shown to be equivalent to |heap'|.
 \end{proof}
