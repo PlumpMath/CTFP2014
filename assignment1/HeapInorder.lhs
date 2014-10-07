@@ -1,21 +1,3 @@
-\documentclass{article}
-\usepackage{amsmath}
-\usepackage{amsthm}
-\usepackage{parskip}
-\usepackage{verbatim}
-\newtheorem{theorem}{Theorem}
-\newtheorem{definition}{Definition}
-\newtheorem{lemma}{Lemma}
-%include polycode.fmt
-
-%format +++ = "\oplus "
-%format < = "\langle "
-%format > = "\rangle "
-%format forall = "\forall "
-%format // = "\sswarrow"
-%format \\ = "\ssearrow"
-
-\begin{document}
 We begin by translating the unoptimized definition
 of $heap$:
 
@@ -99,5 +81,3 @@ inorder (< x > +++ foldr (+++) <  > (map (\x -> < x >) xs)) == -- by Lemma~\ref{
 x : xs
 \end{spec}
 \end{proof}
-
-\end{document}
