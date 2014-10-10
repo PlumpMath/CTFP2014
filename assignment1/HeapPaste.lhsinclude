@@ -1,0 +1,106 @@
+\setcounter{section}{5}
+\setcounter{subsection}{5}
+\subsection{Solution as a left reduction}
+\begin{definition}
+Define |cut| and |paste|.
+
+> cut :: Tree a -> [Tree a]
+> cut   = undefined
+>
+> paste :: [Tree a] -> Tree a
+> paste = foldr (\\) < >
+\end{definition}
+
+\begin{definition}
+Define a new |heap''| function with |paste| and |...|.
+> heap'' = paste . foldl (...) []
+\end{definition}
+
+\begin{lemma} \label{lem:cutdotcross}
+\def\commentbegin{\quad\{\ }
+\def\commentend{\}}
+Starting from
+\begin{spec}
+  heap' xs == heap'' xs
+    {- definition |heap'| and |heap''| -}
+  foldl (***) < > xs == paste (foldl (...) [] xs)
+    {- apply |cut| to both sides -}
+  cut (foldl (***) < > xs) == foldl (...) [] xs
+\end{spec}
+Gives us
+\begin{spec}
+  (cut t) ... b == cut (t *** b)
+\end{spec}
+for som |t| and |b|. TODO: details.
+\end{lemma}
+
+\def\commentbegin{\quad\{\ }
+\def\commentend{\}}
+Using the equation in lemma~\ref{lem:cutdotcross} we can calculate an
+implementation for |...|. Using the cases |cut t == []| and |cut t == (l //
+<a>) : xs|.
+
+\textbf{Case} |cut t == []|. Start with finding out what |t| is.
+\begin{spec}
+  cut t == []
+    {- apply |paste| to both sides -}
+  paste (cut t) == paste []
+    {- identity of |paste . cut| and definition of |paste| -}
+  t == < >
+\end{spec}
+Then apply these values to the equation in lemma~\ref{lem:cutdotcross}.
+\begin{spec}
+  [] ... b == cut (< > *** b)
+    {- definition of |***| -}
+  [] ... b == cut (<b>)
+    {- definition of |cut| -}
+  [] ... b == [<b>]
+\end{spec}
+
+\textbf{Case} |cut t == (l // <a>) : xs|. Again find what |t| is.
+\begin{spec}
+  cut t == (l // <a>) : xs
+    {- apply |paste| to both sides -}
+  paste (cut t) == paste ((l // <a>) : xs)
+    {- identity of |paste . cut| -}
+  t == paste ((l // <a>) : xs)
+    {- definition of |paste| -}
+  t == l // <a> \\ paste xs
+\end{spec}
+And apply this to the lemma~\ref{lem:cutdotcross} equation.
+\begin{spec}
+  ((l // <a>) : xs) ... b == cut ((l // <a> \\ paste xs) *** b)
+    {- definition of |***| -}
+  ((l // <a>) : xs) ... b ==
+    cut (l // <a> \\ (paste xs *** b)) if a < b
+    cut ((l // <a> \\ paste xs) // <b>) otherwise
+\end{spec}
+We can simplify the two cases further.
+
+Consider the case |if a < b|.
+\begin{spec}
+  cut (l // <a> \\ (paste xs *** b)) ==
+    {- definition of |cut| -}
+  (l // <a>) : cut (paste xs *** b)  ==
+    {- lemma~\ref{lem:cutdotcross} -}
+  (l // <a>) : (cut (paste xs) ... b)  ==
+  {- |cut . paste| identity -}
+  (l // <a>) : (xs ... b)
+\end{spec}
+
+Consider the case |otherwise|.
+\begin{spec}
+  cut ((l // <a> \\ paste xs) // <b>) ==
+    {- definition of |cut| -}
+  [(l // <a> \\ paste xs) // <b>] ==
+    {- |t == paste ((l // <a>) : xs) == l // <a> \\ paste xs| -}
+  [paste ((l // <a>) : xs) // <b>]
+\end{spec}
+\begin{corollary} Thus we get the definition of |...|:
+\begin{spec}
+  [] ... b == [<b>]
+  (l // <a>) : xs ... b ==
+    (l // <a>) : (xs ... b) if a < b
+    [paste ((l // <a>) : xs) // <b>] otherwise
+\end{spec}
+\end{corollary}

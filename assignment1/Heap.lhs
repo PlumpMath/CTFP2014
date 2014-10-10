@@ -11,6 +11,7 @@
 
 %format +++ = "\oplus "
 %format *** = "\otimes "
+%format ... = "\odot "
 %format < = "\langle "
 %format > = "\rangle "
 %format forall = "\forall "
@@ -24,4 +25,5 @@
 \maketitle
 %include HeapInorder.lhsinclude
 %include HeapLeftfold.lhsinclude
+%include HeapPaste.lhsinclude
 \end{document}
