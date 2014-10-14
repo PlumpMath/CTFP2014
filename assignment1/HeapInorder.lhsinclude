@@ -1,3 +1,4 @@
+\subsection{Heap construction}
 We begin by translating the unoptimized definition
 of $heap$:
 
@@ -38,8 +39,10 @@ We distinguish the cases $a < b$ and $a \ge b$:
 \textbf{Case} $a < b$:
 In this case we have:
 \begin{spec}
-inorder (< a > +++ u // < b > \\ v) == -- by definition of +++
-inorder (< a > \\ (u // < b > \\ v)) == -- by definition of $inorder$
+inorder (< a > +++ u // < b > \\ v) 
+% == -- by definition of +++
+\\ == inorder (< a > \\ (u // < b > \\ v)) \tag{definition of +++}
+== -- by definition of $inorder$
 treeFold (++) (++) [] . treeMap (:[]) $ < a > \\ (u // < b > \\ v)
 == -- by definitions of $treeFold$ and $foldMap$
 [a] ++ treeFold (++) (++) [] . treeMap (:[]) $ u // < b > \\ v
