@@ -16,4 +16,5 @@ clean:
 	rm -f *.aux
 	rm -f *.ptb
 	rm -f *.log
+	rm -f *.out
 
