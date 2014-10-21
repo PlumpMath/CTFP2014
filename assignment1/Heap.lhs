@@ -49,7 +49,7 @@ and $\langle a \rangle$ a singleton tree.
 \subsection{Accumulation lemma here}
 
 %include HeapInorder.lhsinclude
-\subsubsection{Pablo's proof here}
+%include HeapHeaptree.lhsinclude
 %include HeapLeftfold.lhsinclude
 %include HeapPaste.lhsinclude
 %include Heapheapyheapy5point8.lhsinclude

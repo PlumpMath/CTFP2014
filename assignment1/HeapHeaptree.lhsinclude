@@ -1,0 +1,113 @@
+\subsubsection{Heap property}
+
+\def\commentbegin{\quad\{\ }
+\def\commentend{\}}
+
+We have to prove that every heap constructed by |heap| has the heap
+property, defined by function |heaptree| as follows:
+
+\begin{spec}
+heaptree < >       = True
+heaptree < a >     = True
+heaptree (x // y)  = heaptree x && heaptree y && label x <= label y
+heaptree (x \\ y)  = heaptree x && heaptree y && label y <= label x
+\end{spec}
+
+We first observe some simple facts about |(+++)|, |label| and |heaptree|.
+
+{\bf Observation.} |label (x +++ y) = max (label x) (label y)|
+
+{\bf Observation.} We can combine the last two cases of |heaptree| as follows:
+ 
+|heaptree (x // < a > \\ y) == heaptree x && heaptree y && label x <= a <= label y|
+
+We first prove that when two heaps with the heap property are combined
+with |(+++)|, the heap property is preserved.
+
+\begin{lemma}\label{lem:heap-preservation}
+< forall r s: heaptree r && heaptree s => heaptree (r +++ s)
+\end{lemma}
+
+\begin{proof} We proceed by induction on |r|.
+
+{\bf Case} |r = < >|:
+
+Trivial since |heaptree (< > +++ s) = heaptree s|, which is true by assumption.
+
+{\bf Case} |r = x // < a > \\ y|:
+
+We now do induction on |s|.
+
+{\bf Case} |s = < >|: Trivial, analogous to case |r = < >|.
+
+{\bf Case} |s = u // < b > \\ v|:
+
+We distinguish the cases $a < b$ and |a >= b|.
+
+{\bf Case} $a < b$:
+
+\begin{spec}
+  heaptree (( x // < a > \\ y ) +++ (u // < b > \\ v))
+== {- definition of |(+++)| with $a < b$ -}
+  heaptree (x // < a > \\ (y +++ (u // < b > \\ v)))
+== {- observation -}
+  heaptree x && heaptree (y +++ (u // < b > \\ v)) && label x <= a <= label (y +++ (u // < b > \\ v))
+== {- inductive hypothesis -}
+  heaptree x && heaptree y && heaptree (u // < b > \\ v) && label x <= a <= label (y +++ (u // < b > \\ v))
+== {- observation -}
+  heaptree x && heaptree y && heaptree (u // < b > \\ v) && label x <= a <= max (label y) b
+== {- assumptions -}
+  a <= max (label y) b
+== {- |heaptree ( x // < a > \\ y)| implies that |a <= label y|, so |a <= max (label y) b| -}
+  True
+\end{spec}
+
+{\bf Case} |a >= b|:
+
+\begin{spec}
+  heaptree (( x // < a > \\ y ) +++ (u // < b > \\ v))
+== {- definition of |(+++)| with |a >= b| -}
+  heaptree (((x // < a > \\ y) +++ u) // < b > \\ v)
+== {- observation -}
+  heaptree ((x // < a > \\ y) +++ u) && heaptree v && label ((x // < a > \\ y) +++ u) <= b <= label v
+== {- inductive hypothesis -}
+  heaptree (x // < a > \\ y) && heaptree u && heaptree v && label ((x // < a > \\ y) +++ u) <= b <= label v
+== {- observation -}
+  heaptree (x // < a > \\ y) && heaptree u && heaptree v && max a (label u) <= b <= label v
+== {- assumptions -}
+  max a (label u) <= b
+== {- |heaptree ( u // < b > \\ v)| implies that |label u <= b|, so |max a (label u) <= b| -}
+  True
+\end{spec}
+\end{proof}
+
+Now we are ready to prove the main theorem.
+
+\begin{theorem}\label{thm:heaptree}
+< forall xs: heaptree (heap xs) = True
+\end{theorem}
+
+\begin{proof}
+By induction on the structure of |xs|.
+
+{\bf Case} |xs = []|: Trivial.
+
+{\bf Case} |xs = x ++ y|. Let |wrap x = < x >|, then we argue
+
+\begin{spec}
+   heaptree (heap (x ++ y))
+== {- definition of |heap| -}
+   heaptree (foldr (+++) < > (map wrap (x ++ y)))
+== {- definition of |map| -}
+   heaptree (foldr (+++) < > (map wrap x ++ map wrap y))
+== {- definition of |reduce| -}
+   heaptree ((foldr (+++) < > (map wrap x)) +++ (foldr (+++) < > (map wrap y)))
+== {- definition of |heap| -}
+   heaptree (heap x +++ heap y)
+== {- inductive hypothesis and previous lemma -}
+   True
+
+\end{spec}
+
+\end{proof}
+
