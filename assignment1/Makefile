@@ -7,6 +7,7 @@ all : $(patsubst %.lhs,%.pdf,$(wildcard *.lhs))
 	agda -i. --latex --latex-dir=. $?
 
 %.pdf: %.tex
+	latex $(?:.pdf=.tex)
 	pdflatex $?
 
 clean:

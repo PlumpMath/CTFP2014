@@ -27,7 +27,7 @@
 \maketitle
 This document presents the problem of building a heap 
 whose inorder traversal is a given sequence (Bird 1989) 
-using a modern Haskell notation. We, however, use sumbols
+using a modern Haskell notation. We, however, use symbols
 to denote arbitrary binary operators for conciseness reasons.
 
 We also rely on tree construction using partially defined binary 
