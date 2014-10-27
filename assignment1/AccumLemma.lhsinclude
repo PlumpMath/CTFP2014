@@ -1,0 +1,44 @@
+\subsection{Accumulation lemma}
+
+\def\commentbegin{\quad\{\ }
+\def\commentend{\}}
+
+The proof will use |label|-|up|-fusion:
+
+\begin{lemma}
+< label . up == reduce (+++, ***)
+\end{lemma}
+
+\begin{lemma}
+< up == map (reduce (+++, ***)) . subtrees
+\end{lemma}
+
+\begin{proof} By induction on the argument:
+
+\textbf{Cases} $\langle \rangle$, $\langle a \rangle$ are trivial.
+
+\textbf{Case} |x // < a >| :
+
+\begin{spec}
+  up (x // < a >) == treeMap (reduce (+++, ***)) (subtrees (x // < a >))
+  == {- definition of |subtrees| -}
+  up (x // < a >) == treeMap (reduce (+++, ***)) (subtrees x // < x // < a > >)
+  == {- definition of |treeMap| -}
+  up (x // < a >) == treeMap (reduce (+++, ***)) (subtrees x) // reduce (+++, ***) < x // < a > >
+  == {- definition of |up| -}
+  up x // < label (up x) +++ a > == treeMap (reduce (+++, ***)) (subtrees x) // reduce (+++, ***) < x // < a > >
+  == {- congruence of // and induction hypothesis-}
+  < label (up x) +++ a > == reduce (+++, ***) < x // < a > >
+  == {- definition of |reduce| -}
+  < label (up x) +++ a > == reduce (+++, ***) x +++ reduce (+++, ***) < a >
+  == {- definition of |reduce| -}
+  < label (up x) +++ a > == reduce (+++, ***) x +++ < a >
+  == {- |label|-|up| fusion -}
+  < reduce (+++, ***) x +++ a > == reduce (+++, ***) x +++ < a >
+\end{spec}
+
+
+\textbf{Case} |< a > \\ y| is analogous to the previous one.
+
+
+\end{proof}
