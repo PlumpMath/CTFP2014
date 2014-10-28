@@ -46,8 +46,7 @@ and $\langle a \rangle$ a singleton tree.
 \setcounter{section}{5}
 \setcounter{subsection}{4}
 
-\subsection{Accumulation lemma here}
-
+%include AccumLemma.lhsinclude
 %include HeapInorder.lhsinclude
 %include HeapHeaptree.lhsinclude
 %include HeapLeftfold.lhsinclude
