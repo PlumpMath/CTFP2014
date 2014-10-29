@@ -39,3 +39,35 @@ r_1 \circ \inalg = f_1 \circ F\,\pair{r_1}{r_2} \\
 r_2 \circ \inalg = f_2 \circ F\,\pair{r_1}{r_2}
 \end{gather*}
 \end{corollary}
+
+\begin{example}[Predicates for even and odd natural numbers]
+\def\odd{\mathrm{odd}}
+\def\even{\mathrm{even}}
+\def\const#1{\mathrm{const}\,#1}
+
+We define the two helper functions
+$\odd{}', \even{}' : \coproduct{1}{\product{\mathrm{Bool}}{\mathrm{Bool}}} \rightarrow \mathrm{Bool}$
+
+\begin{align*}
+\odd{}'  &= \case{\const{\mathbf{true}}}{\snd{}} \\
+\even{}' &= \case{\const{\mathbf{false}}}{\fst{}}
+\end{align*}
+
+and corollary~\ref{cor:mutumorphisms} then gives us
+$\odd{}, \even{} : \mathbb{N}_1 \rightarrow \mathrm{Bool}$
+such that
+
+\begin{align*}
+\odd{} \circ \case{\mathbf{O}}{\mathbf{S}}  &= \odd{}' \circ \either{\id{}}{\pair{\odd{}}{\even{}}} \\
+\even{} \circ \case{\mathbf{O}}{\mathbf{S}} &= \even{}' \circ \either{\id{}}{\pair{\odd{}}{\even{}}}
+\end{align*}
+
+Unfolding the definitions of the helper functions and simplifying
+each side of the equations leads to the usual definitions of the two
+predicates through pattern matching on the number argument
+
+\begin{align*}
+\case{(\odd{} \circ \mathbf{O})}{(\odd{} \circ \mathbf{S})}   &= \case{\const{\mathbf{true}}}{\even{}} \\
+\case{(\even{} \circ \mathbf{O})}{(\even{} \circ \mathbf{S})} &= \case{\const{\mathbf{false}}}{\odd{}}
+\end{align*}
+\end{example}
