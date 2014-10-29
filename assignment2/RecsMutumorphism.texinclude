@@ -1,3 +1,41 @@
 \section{Mutumorphisms}
 
-\textit{missing}
+\begin{theorem}[Fokkinga's mutual recursion theorem]
+\label{thm:fokkinga}
+\[
+\pair{f}{g} = \fold{\pair{h}{k}}
+\]
+
+if and only if
+
+\begin{gather*}
+f \circ \inalg = h \circ F\,\pair{f}{g} \\
+g \circ \inalg = k \circ F\,\pair{f}{g}
+\end{gather*}
+\end{theorem}
+
+\begin{corollary}
+\label{cor:mutumorphisms}
+Every pair of morphisms
+
+\[
+f_1 : F\,\product{A}{B} \rightarrow A
+\qquad
+f_2 : F\,\product{A}{B} \rightarrow B
+\]
+
+uniquely determines a pair of morphisms
+
+\[
+r_1 : T \rightarrow A
+\qquad
+r_2 : T \rightarrow B
+\]
+
+such that
+
+\begin{gather*}
+r_1 \circ \inalg = f_1 \circ F\,\pair{r_1}{r_2} \\
+r_2 \circ \inalg = f_2 \circ F\,\pair{r_1}{r_2}
+\end{gather*}
+\end{corollary}
