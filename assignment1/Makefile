@@ -6,9 +6,9 @@ all : $(patsubst %.lhs,%.pdf,$(wildcard *.lhs))
 %.tex: %.lagda
 	agda -i. --latex --latex-dir=. $?
 
-%.pdf: %.tex
-	latex $(?:.pdf=.tex)
-	pdflatex $?
+%.pdf: %.tex $(wildcard $@*.texinclude)
+	latex $<
+	pdflatex $<
 
 clean:
 	rm -f *.tex
