@@ -71,3 +71,27 @@ predicates through pattern matching on the number argument
 \case{(\even{} \circ \mathbf{O})}{(\even{} \circ \mathbf{S})} &= \case{\const{\mathbf{false}}}{\odd{}}
 \end{align*}
 \end{example}
+
+\begin{example}[Banana-split law]
+  The fork of two folds can always be implemented as a single fold,
+  thereby eliminating one of the traversals and possibly reducing the
+  runtime of the computation.
+
+  \[
+  \pair{\fold{h}}{\fold{k}} = \fold{(\pair{(h \circ F\,\fst{})}{(k \circ F\,\snd{})})}
+  \]
+
+  This identity follows from theorem~\ref{thm:fokkinga} after showing
+  that the two prerequisites hold. We shall only carry out the proof
+  of the first one since the second one can be obtained similarly.
+
+  \begin{align*}
+    & \fold{h} \circ \inalg{} \\
+  = & \mbox{\quad \{ universal property of initial algebras \}} \\
+    & h \circ F\,\fold{h} \\
+  = & \mbox{\quad \{ universal property of products \}} \\
+    & h \circ F\,(\fst{} \circ \pair{\fold{h}}{\fold{k})} \\
+  = & \mbox{\quad \{ functors preserve composition \}} \\
+    & h \circ F\,\fst{} \circ F\,\pair{\fold{h}}{\fold{k}}
+  \end{align*}
+\end{example}
