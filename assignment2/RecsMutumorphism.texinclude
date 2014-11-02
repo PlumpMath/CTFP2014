@@ -3,7 +3,7 @@
 \begin{theorem}[Fokkinga's mutual recursion theorem]
 \label{thm:fokkinga}
 \[
-\pair{f}{g} = \fold{\pair{h}{k}}
+\pair{f}{g} = \fold{(\pair{h}{k})}
 \]
 
 if and only if
