@@ -12,6 +12,19 @@ if and only if
 f \circ \inalg = h \circ F\,\pair{f}{g} \\
 g \circ \inalg = k \circ F\,\pair{f}{g}
 \end{gather*}
+
+\begin{proof}
+\begin{align*}
+                & \pair{f}{g} = \fold{(\pair{h}{k})} \\
+\Leftrightarrow & \mbox{\quad \{ universal property of folds \}} \\
+                & \pair{f}{g} \circ \inalg = \pair{h}{k} \circ F\,\pair{f}{g} \\
+\Leftrightarrow & \mbox{\quad \{ fork fusion \}} \\
+                & \pair{(f \circ \inalg)}{(g \circ \inalg)} = \pair{(h \circ F\,\pair{f}{g})}{(k \circ F\,\pair{f}{g})} \\
+\Leftrightarrow & \mbox{\quad \{ universal property of products \}} \\
+                & f \circ \inalg = h \circ F\,\pair{f}{g} \\
+                & g \circ \inalg = k \circ F\,\pair{f}{g}
+\end{align*}
+\end{proof}
 \end{theorem}
 
 \begin{corollary}
