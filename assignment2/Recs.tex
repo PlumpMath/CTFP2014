@@ -1,7 +1,9 @@
 \documentclass{article}
 \usepackage{amsmath}
 \usepackage{amsthm}
+\usepackage{thmtools}
 \usepackage{amsfonts}
+\usepackage{amssymb}
 \usepackage{parskip}
 \usepackage{verbatim}
 \usepackage{hyperref}
@@ -11,7 +13,7 @@
 \newtheorem{definition}{Definition}
 \newtheorem{lemma}{Lemma}
 \newtheorem{corollary}{Corollary}
-\newtheorem{example}{Example}
+\declaretheorem[style=definition,qed=$\blacksquare$]{example}
 \newcommand{\category}[1]{\mathcal{#1}}
 \newcommand{\id}[0]{\mathrm{id}}
 \newcommand{\coproduct}[2]{#1\!+\!#2}
