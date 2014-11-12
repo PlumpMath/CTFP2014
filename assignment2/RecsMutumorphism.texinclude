@@ -22,7 +22,7 @@ g \circ \inalg = k \circ F\,\pair{f}{g}
                 & \pair{(f \circ \inalg)}{(g \circ \inalg)} = \pair{(h \circ F\,\pair{f}{g})}{(k \circ F\,\pair{f}{g})} \\
 \Leftrightarrow & \mbox{\quad \{ universal property of products \}} \\
                 & f \circ \inalg = h \circ F\,\pair{f}{g} \\
-                & g \circ \inalg = k \circ F\,\pair{f}{g}
+                & g \circ \inalg = k \circ F\,\pair{f}{g} \qedhere
 \end{align*}
 \end{proof}
 \end{theorem}
@@ -81,7 +81,7 @@ predicates through pattern matching on the number argument
 
 \begin{align*}
 \case{(\odd{} \circ \mathbf{O})}{(\odd{} \circ \mathbf{S})}   &= \case{\const{\mathbf{true}}}{\even{}} \\
-\case{(\even{} \circ \mathbf{O})}{(\even{} \circ \mathbf{S})} &= \case{\const{\mathbf{false}}}{\odd{}}
+\case{(\even{} \circ \mathbf{O})}{(\even{} \circ \mathbf{S})} &= \case{\const{\mathbf{false}}}{\odd{}} \qedhere
 \end{align*}
 \end{example}
 
@@ -105,6 +105,6 @@ predicates through pattern matching on the number argument
   = & \mbox{\quad \{ universal property of products \}} \\
     & h \circ F\,(\fst{} \circ \pair{\fold{h}}{\fold{k})} \\
   = & \mbox{\quad \{ functors preserve composition \}} \\
-    & h \circ F\,\fst{} \circ F\,\pair{\fold{h}}{\fold{k}}
+    & h \circ F\,\fst{} \circ F\,\pair{\fold{h}}{\fold{k}} \qedhere
   \end{align*}
 \end{example}
