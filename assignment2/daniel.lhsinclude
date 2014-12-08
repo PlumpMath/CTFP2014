@@ -1,0 +1,33 @@
+\subsection{Applications}
+To illustrate the concept of zygomorphism we
+prove a connection to paramorphisms. In fact,
+every paramorphism can be expressed by a zygomorphism
+and vice versa.
+
+\begin{theorem}
+  For every zygomorphism |zygo g h| it holds that
+  |zygo g h = para f| for |f = g . F (id * fold h)|
+\end{theorem}
+
+\begin{proof}
+  Note that by the universal property of zygomorphisms, |zygo g h|
+  is the only arrow |a| such that |a . in = g . F (a /_\ fold h)|.
+
+  Therefore, it is enough to prove that |para f . in = g . F (para f /_\ fold h)|:
+
+  \begin{spec}
+para f . in = g . F (para f /_\ fold h)
+<=> {- universal property of paramorphisms -}
+f . F (para f /_\ id) = g . F (para f /_\ fold h)
+<=> {- definition of |f| -}
+g . F (id * fold h) . F (para f /_\ id) = g . F (para f /_\ fold h)
+<=> {- |F| functor -}
+g . F ((id * fold h) . (para f /_\ id)) = g . F (para f /_\ fold h)
+<=> {- |*| / |/_\| fusion -}
+g . F ((id . para f) /_\ (fold h . id)) = g . F (para f /_\ fold h)
+<=> {- identities -}
+g . F (para f /_\ fold h) = g . F (para f /_\ fold h)
+<=> {- refl -}
+true
+  \end{spec}
+\end{proof}
