@@ -1,0 +1,47 @@
+
+\begin{definition}[Zygomorphisms]
+
+  Given a functor $F$ and arrows |g : F (A * B) -> A| and |h : F B ->
+  B|, we define a \emph{zygomorphism} over |g| and |h| as a solution
+  to the equation
+
+> f . in = g . F (f /_\ fold h)
+
+\end{definition}
+
+\def\commentbegin{\quad\{\ }
+\def\commentend{\}}
+
+\begin{theorem}[Universal property of Zygomorphisms]
+
+  The previous equation has exactly one solution for a given pair of
+  arrows |g| and |h|. This solution is given by |f = fst . fold (g /_\  (h . F snd))|.
+
+\end{theorem}
+
+\begin{proof}
+
+  We compute:
+
+\begin{spec}
+  f . in = g . F (f /_\ fold h)
+= {- equality of pairs -}
+  (f . in) /_\ (h . F (fold h)) = (g . F (f /_\ fold h)) /_\ (h . F (fold h))
+= {- universal property of |fold h| -}
+  (f . in) /_\ (fold h . in) = (g . F (f /_\ fold h)) /_\ (h . F (fold h))
+= {- functor, universal property of |/_\| -}
+  (f . in) /_\ (fold h . in) = (g . F (f /_\ fold h)) /_\ (h . F snd . F (f /_\ fold h))
+= {- |/_\| fusion -}
+  (f /_\ fold h). in = (g /_\ h . F snd) . F (f /_\ fold h)
+= {- universal property of |f /_\ fold h| -}
+  f /_\ fold h = fold (g /_\ h . F snd)
+= {- universal property of |/_\| -}
+  f = fst . fold (g /_\ h . F snd)
+  fold h = snd . fold (g /_\ h . F snd)
+= {- logic -}
+  f = fst . fold (g /_\ h . F snd)
+\end{spec}
+
+
+
+\end{proof}
