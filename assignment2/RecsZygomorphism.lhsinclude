@@ -2,6 +2,7 @@
 %format * = "\times"
 %format /_\ = "\mathop{\triangle}"
 %format \_/ = "\mathop{\triangledown}"
+%format <=> = "\Leftrightarrow"
 
 \section{Zygomorphisms}
 
