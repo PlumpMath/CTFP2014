@@ -9,9 +9,6 @@
 
 \end{definition}
 
-\def\commentbegin{\quad\{\ }
-\def\commentend{\}}
-
 \begin{theorem}[Universal property of Zygomorphisms]
 
   The previous equation has exactly one solution for a given pair of

@@ -6,7 +6,7 @@ and vice versa.
 
 \begin{theorem}
   For every zygomorphism |zygo g h| it holds that
-  |zygo g h = para f| for |f = g . F (id * fold h)|
+  |zygo g h = para f| for |f = g . F (id * fold h)|.
 \end{theorem}
 
 \begin{proof}

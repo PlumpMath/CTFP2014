@@ -5,6 +5,8 @@
 %format <=> = "\Leftrightarrow"
 
 \section{Zygomorphisms}
+\def\commentbegin{\quad\{\ }
+\def\commentend{\}}
 
 %include pablo.lhsinclude
 %include daniel.lhsinclude
