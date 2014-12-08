@@ -16,19 +16,19 @@ and vice versa.
   Therefore, it is enough to prove that |para f . in = g . F (para f /_\ fold h)|:
 
   \begin{spec}
-para f . in = g . F (para f /_\ fold h)
-<=> {- universal property of paramorphisms -}
-f . F (para f /_\ id) = g . F (para f /_\ fold h)
-<=> {- definition of |f| -}
-g . F (id * fold h) . F (para f /_\ id) = g . F (para f /_\ fold h)
-<=> {- |F| functor -}
-g . F ((id * fold h) . (para f /_\ id)) = g . F (para f /_\ fold h)
-<=> {- |*| / |/_\| fusion -}
-g . F ((id . para f) /_\ (fold h . id)) = g . F (para f /_\ fold h)
-<=> {- identities -}
-g . F (para f /_\ fold h) = g . F (para f /_\ fold h)
-<=> {- refl -}
-true
+    para f . in = g . F (para f /_\ fold h)
+    <=> {- universal property of paramorphisms -}
+    f . F (para f /_\ id) = g . F (para f /_\ fold h)
+    <=> {- definition of |f| -}
+    g . F (id * fold h) . F (para f /_\ id) = g . F (para f /_\ fold h)
+    <=> {- |F| functor -}
+    g . F ((id * fold h) . (para f /_\ id)) = g . F (para f /_\ fold h)
+    <=> {- |*| / |/_\| fusion -}
+    g . F ((id . para f) /_\ (fold h . id)) = g . F (para f /_\ fold h)
+    <=> {- identities -}
+    g . F (para f /_\ fold h) = g . F (para f /_\ fold h)
+    <=> {- refl -}
+    true
   \end{spec}
 \end{proof}
 
