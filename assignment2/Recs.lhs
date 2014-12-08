@@ -22,12 +22,14 @@
 \newcommand{\product}[2]{#1\!\times\!#2}
 \newcommand{\fst}[0]{\mathrm{fst}}
 \newcommand{\snd}[0]{\mathrm{snd}}
-\newcommand{\pair}[2]{#1\!\bigtriangleup{}\!#2}
+\newcommand{\pair}[2]{#1 \mathop{\triangle{}} #2}
 \newcommand{\cross}[2]{#1\!\times{}\!#2}
-\newcommand{\case}[2]{#1\!\bigtriangledown{}\!#2}
+\newcommand{\case}[2]{#1 \mathop{\triangledown{}} #2}
 \newcommand{\either}[2]{#1\!+\!#2}
 \newcommand{\inalg}[0]{\mathbf{in}}
 \newcommand{\fold}[1]{\mathrm{fold}\,#1}
+%include polycode.fmt
+
 
 \begin{document}
 \title{Recursion Schemes}
@@ -35,7 +37,7 @@
 \maketitle
 \tableofcontents
 
-\input{RecsZygomorphism.texinclude}
+%include RecsZygomorphism.lhsinclude
 \input{RecsMutumorphism.texinclude}
 \input{RecsAccumulation.texinclude}
 \input{RecsNestedDatatypes.texinclude}
