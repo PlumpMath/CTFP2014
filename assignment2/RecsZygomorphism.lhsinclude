@@ -1,4 +1,8 @@
 
+%format * = "\times"
+%format /_\ = "\mathop{\triangle}"
+%format \_/ = "\mathop{\triangledown}"
+
 \section{Zygomorphisms}
 
 %include pablo.lhsinclude
