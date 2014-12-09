@@ -6,27 +6,27 @@ and vice versa.
 
 \begin{theorem}
   For every zygomorphism |zygo g h| it holds that
-  |zygo g h = para f| for |f = g . F (id * fold h)|.
+  |zygo g h = para f| for |f = g . F (fold h * id)|.
 \end{theorem}
 
 \begin{proof}
   Note that by the universal property of zygomorphisms, |zygo g h|
-  is the only arrow |a| such that |a . in = g . F (a /_\ fold h)|.
+  is the only arrow |a| such that |a . in = g . F (fold h /_\ a)|.
 
-  Therefore, it is enough to prove that |para f . in = g . F (para f /_\ fold h)|:
+  Therefore, it is enough to prove that |para f . in = g . F (fold h /_\ para f)|:
 
   \begin{spec}
-    para f . in = g . F (para f /_\ fold h)
+    para f . in = g . F (fold h /_\ para f)
     <=> {- universal property of paramorphisms -}
-    f . F (para f /_\ id) = g . F (para f /_\ fold h)
+    f . F (id /_\ para f) = g . F (fold h /_\ para f)
     <=> {- definition of |f| -}
-    g . F (id * fold h) . F (para f /_\ id) = g . F (para f /_\ fold h)
+    g . F (fold h * id) . F (id /_\ para f) = g . F (fold h /_\ para f)
     <=> {- |F| functor -}
-    g . F ((id * fold h) . (para f /_\ id)) = g . F (para f /_\ fold h)
+    g . F ((fold h * id) . (id /_\ para f)) = g . F (fold h /_\ para f)
     <=> {- |*| / |/_\| fusion -}
-    g . F ((id . para f) /_\ (fold h . id)) = g . F (para f /_\ fold h)
+    g . F ((fold h . id) /_\ (id . para f)) = g . F (fold h /_\ para f)
     <=> {- identities -}
-    g . F (para f /_\ fold h) = g . F (para f /_\ fold h)
+    g . F (fold h /_\ para f) = g . F (para f /_\ fold h)
     <=> {- reflexivity -}
     true
   \end{spec}
@@ -41,18 +41,18 @@ Similarly, we can (trivially) use a zygomorphism instead of a paramorphism:
 
 \begin{proof}
   By the universal property of paramorphisms, it is enough to show that
-  |zygo g h . in = f . F(zygo g h /_\ id)|. Since this paramorphisms are unique
+  |zygo g h . in = f . F(id /_\ zygo g h)|. Since this paramorphisms are unique
   (up to isomorphism), it must then hold that |para f = zygo g h|.
 
   We compute:
   \begin{spec}
-    zygo g h . in = f . F(zygo g h /_\ id)
+    zygo g h . in = f . F(id /_\ zygo g h)
     <=> {- universal property of zygomorphisms -}
-    g . F(zygo g h /_\ fold h) = f . F(zygo g h /_\ id)
+    g . F(fold h /_\ zygo g h) = f . F(id /_\ zygo g h)
     <=> {- definitions of g and h -}
-    f . F(zygo f in /_\ fold in) = f . F(zygo f in /_\ id)
+    f . F(fold in /_\ zygo f in) = f . F(id /_\ zygo f in)
     <=> {- reflection -}
-    f . F(zygo f in /_\ id) = f . F(zygo f in /_\ id)
+    f . F(id /_\ zygo f in) = f . F(id /_\ zygo f in)
     <=> {- reflexivity -}
     true
   \end{spec}
