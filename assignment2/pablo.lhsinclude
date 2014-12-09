@@ -2,17 +2,17 @@
 \begin{definition}[Zygomorphisms]
 
   Given a functor $F$ and arrows |g : F (A * B) -> A| and |h : F B ->
-  B|, we define a \emph{zygomorphism} over |g| and |h| as a solution
-  to the equation
+  B|, we define a \emph{zygomorphism} over |g| and |h| as the arrow
+  |f| with the following universal property:
 
-> f . in = g . F (f /_\ fold h)
+> f . in = g . F (fold h /_\ f)
 
 \end{definition}
 
-\begin{theorem}[Universal property of Zygomorphisms]
+\begin{theorem}[Well-definedness of zygomorphisms]
 
   The previous equation has exactly one solution for a given pair of
-  arrows |g| and |h|. This solution is given by |f = fst . fold (g /_\  (h . F snd))|.
+  arrows |g| and |h|. This solution is given by |f = snd . fold ((h . F fst) /_\  g)|.
 
 \end{theorem}
 
@@ -21,22 +21,22 @@
   We compute:
 
 \begin{spec}
-  f . in = g . F (f /_\ fold h)
-= {- equality of pairs -}
-  (f . in) /_\ (h . F (fold h)) = (g . F (f /_\ fold h)) /_\ (h . F (fold h))
-= {- universal property of |fold h| -}
-  (f . in) /_\ (fold h . in) = (g . F (f /_\ fold h)) /_\ (h . F (fold h))
-= {- functor, universal property of |/_\| -}
-  (f . in) /_\ (fold h . in) = (g . F (f /_\ fold h)) /_\ (h . F snd . F (f /_\ fold h))
-= {- |/_\| fusion -}
-  (f /_\ fold h). in = (g /_\ h . F snd) . F (f /_\ fold h)
-= {- universal property of |f /_\ fold h| -}
-  f /_\ fold h = fold (g /_\ h . F snd)
-= {- universal property of |/_\| -}
-  f = fst . fold (g /_\ h . F snd)
-  fold h = snd . fold (g /_\ h . F snd)
-= {- logic -}
-  f = fst . fold (g /_\ h . F snd)
+  f . in = g . F (fold h /_\ f)
+<=> {- equality of pairs -}
+  (h . F (fold h)) /_\ (f . in)  = (h . F (fold h)) /_\  (g . F (fold h /_\ f))
+<=> {- universal property of |fold h| -}
+  (h . F (fold h)) /_\ (f . in) = (h . F (fold h)) /_\  (g . F (fold h /_\ f))
+<=> {- functor, universal property of |/_\| -}
+  (fold h . in) /_\ (f . in) = (h . F fst . F (fold h /_\ f)) /_\ (g . F (fold h /_\ f))
+<=> {- |/_\| fusion -}
+  (fold h /_\ f). in = ((h . F fst) /_\  g) . F (fold h /_\ f) 
+<=> {- universal property of |fold h /_\ f| -}
+  fold h /_\ f = fold ((h . F fst) /_\  g)
+<=> {- universal property of |/_\| -}
+  fold h  = fst . fold ((h . F fst) /_\  g)
+  f       = snd . fold ((h . F fst) /_\  g)
+<=> {- logic -}
+  f = snd . fold ((h . F fst) /_\  g)
 \end{spec}
 
 
