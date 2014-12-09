@@ -27,7 +27,33 @@ and vice versa.
     g . F ((id . para f) /_\ (fold h . id)) = g . F (para f /_\ fold h)
     <=> {- identities -}
     g . F (para f /_\ fold h) = g . F (para f /_\ fold h)
-    <=> {- refl -}
+    <=> {- reflexivity -}
+    true
+  \end{spec}
+\end{proof}
+
+Similarly, we can (trivially) use a zygomorphism instead of a paramorphism:
+
+\begin{theorem}
+  For every paramorphism |para f| it holds that
+  |para f = zygo g h| for |g = f| and |h = in|.
+\end{theorem}
+
+\begin{proof}
+  By the universal property of paramorphisms, it is enough to show that
+  |zygo g h . in = f . F(zygo g h /_\ id)|. Since this paramorphisms are unique
+  (up to isomorphism), it must then hold that |para f = zygo g h|.
+
+  We compute:
+  \begin{spec}
+    zygo g h . in = f . F(zygo g h /_\ id)
+    <=> {- universal property of zygomorphisms -}
+    g . F(zygo g h /_\ fold h) = f . F(zygo g h /_\ id)
+    <=> {- definitions of g and h -}
+    f . F(zygo f in /_\ fold in) = f . F(zygo f in /_\ id)
+    <=> {- reflection -}
+    f . F(zygo f in /_\ id) = f . F(zygo f in /_\ id)
+    <=> {- reflexivity -}
     true
   \end{spec}
 \end{proof}
