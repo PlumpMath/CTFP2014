@@ -94,3 +94,6 @@ noDups = zygo f z g
           g (Left ()) = True
           g (Right (x, (r, fh))) = r && fh x == 1
 \end{code}
+% Local Variables:
+% mode: latex
+% End:
