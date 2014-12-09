@@ -25,7 +25,7 @@
 <=> {- equality of pairs -}
   (h . F (fold h)) /_\ (f . in)  = (h . F (fold h)) /_\  (g . F (fold h /_\ f))
 <=> {- universal property of |fold h| -}
-  (h . F (fold h)) /_\ (f . in) = (h . F (fold h)) /_\  (g . F (fold h /_\ f))
+  (fold h . in) /_\ (f . in) = (h . F (fold h)) /_\  (g . F (fold h /_\ f))
 <=> {- functor, universal property of |/_\| -}
   (fold h . in) /_\ (f . in) = (h . F fst . F (fold h /_\ f)) /_\ (g . F (fold h /_\ f))
 <=> {- |/_\| fusion -}
