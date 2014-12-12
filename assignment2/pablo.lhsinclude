@@ -39,6 +39,5 @@
   f = snd . fold ((h . F fst) /_\  g)
 \end{spec}
 
-
-
 \end{proof}
+
