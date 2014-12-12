@@ -1,0 +1,62 @@
+
+\subsubsection{Constant folding in a simple arithmetic expression language}
+
+Consider a data type for arithmetic expressions with variables:
+
+\begin{spec}
+  data Exp = Const Int | Var | Add Exp Exp
+\end{spec}
+
+Suppose that we have an evaluation function |eval : Exp -> Int ->
+Int|. A common optimisation for this kind of language is constant
+folding: replacing things like |Add (Const 1) (Const 2)| with |Const
+3| before doing evaluation. A recursive definition of this function is
+given by
+
+\begin{spec}
+  opt :: Exp -> Exp
+  opt (Const n) = Const n
+  opt Var = Var
+  opt (Add (Const n) (Const m)) = Const (n + m)
+  opt (Add x y) = Add (opt x) (opt y)
+\end{spec}
+
+This function is hard to express as a fold. However, we can easily
+express this function (or rather, a more general version of it) as a
+zygomorphism.
+
+Consider the functor |E X = Int + 1 + X * X| which describes the
+structure of arithmetic expressions. The initial algebra for this
+functor is |in = Const \_/ Var \_/ Add|.\footnote{Since |(A+B)+C| and
+  |A+(B+C)| are isomorphic, we treat |A+B+C| as having three injection
+  functions.}
+
+We would like to write a function |opt : mu E -> mu E| that performs
+constant folding. The idea is to check that a given expression
+contains no |Var| nodes, and in that case use |eval| to simplify the
+expression into a constant.
+
+We first define the function for checking that an expression is
+variable-free as a fold:
+
+\begin{spec}
+  vf :: mu E -> Bool
+  vf = fold (const True \_/ False \_/ (&&))
+\end{spec}
+
+Let us write |h = const True \_/ False \_/ (&&)| as a shorthand for the |vf|
+|E|-algebra. Now, we can use |h| in a zygomorphism to get
+|opt|:
+
+\begin{spec}
+  opt :: mu E -> mu E
+  opt = zygo (g, h)
+    where g = Const \_/ Var \_/ optimise
+          optimise (True,(ox,oy)) = Const (eval (Add ox oy) 0)
+          optimise (False,(ox,oy)) = Add ox oy
+\end{spec}
+
+Note that, in the first equation of |optimise|, we know from |vf =
+fold h| that there are no variables in the expression, so we can use
+|eval| to do constant folding (the value 0 is never used in that
+particular call of |eval|).
