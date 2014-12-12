@@ -3,6 +3,7 @@
 %format /_\ = "\mathop{\triangle}"
 %format \_/ = "\mathop{\triangledown}"
 %format <=> = "\Leftrightarrow"
+%format mu = "\mu\!\!"
 
 \section{Zygomorphisms}
 \def\commentbegin{\quad\{\ }
@@ -10,3 +11,4 @@
 
 %include pablo.lhsinclude
 %include daniel.lhsinclude
+%include eval.lhsinclude
