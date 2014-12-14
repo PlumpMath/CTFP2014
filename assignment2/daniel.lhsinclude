@@ -1,4 +1,5 @@
 \subsection{Applications}
+\subsubsection{Connection to zygomorphisms}
 To illustrate the concept of zygomorphism we
 prove a connection to paramorphisms. In fact,
 every paramorphism can be expressed by a zygomorphism
@@ -62,6 +63,8 @@ The basic intuition of a zygomorphism |zygo g h| is that we fold over
 the data structure twice: We fold over the data structure as usual, but
 when calling |g|, we also pass it the result of folding over the current
 ``argument'' (TODO: rephrase) using |h|.
+
+\subsubsection{Checking a list for duplicates}
 
 To give a more practical example of applying zygomorphisms in
 practice, we consider the problem of defining a function |noDups| to
