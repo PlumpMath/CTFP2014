@@ -1,9 +1,8 @@
 \subsection{Applications}
 \subsubsection{Connection to zygomorphisms}
-To illustrate the concept of zygomorphism we
-prove a connection to paramorphisms. In fact,
-every paramorphism can be expressed by a zygomorphism
-and vice versa.
+To illustrate the concept of zygomorphisms we prove a connection to
+paramorphisms. In fact, every paramorphism can be expressed by a
+zygomorphism and vice versa.
 
 \begin{theorem}
   For every zygomorphism |zygo g h| it holds that
@@ -62,7 +61,7 @@ Similarly, we can (trivially) use a zygomorphism instead of a paramorphism:
 The basic intuition of a zygomorphism |zygo g h| is that we fold over
 the data structure twice: We fold over the data structure as usual, but
 when calling |g|, we also pass it the result of folding over the current
-``argument'' (TODO: rephrase) using |h|.
+``argument'' using |h|.
 
 \subsubsection{Checking a list for duplicates}
 
