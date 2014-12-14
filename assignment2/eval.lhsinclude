@@ -1,7 +1,8 @@
 
 \subsubsection{Constant folding in a simple arithmetic expression language}
 
-Consider a data type for arithmetic expressions with variables:
+Consider a data type for arithmetic expressions with variables (for simplicity
+we consider just one variable):
 
 \begin{spec}
   data Exp = Const Int | Var | Add Exp Exp
