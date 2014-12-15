@@ -110,7 +110,6 @@ predicates through pattern matching on the number argument
 \end{example}
 
 \begin{example}[Zygomorphisms are well-defined]
-
   The zygomorphism over
 
     \[
@@ -142,5 +141,4 @@ predicates through pattern matching on the number argument
   the zygomorphism can be constructed as $\fst{} \circ
   \fold{(\pair{g}{(h \circ F\,\snd{})})}$. Now, this result is
   immediately accessible through theorem~\ref{thm:fokkinga}.
-
 \end{example}
