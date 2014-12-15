@@ -40,9 +40,9 @@ f_2 : F\,\product{A}{B} \rightarrow B
 uniquely determines a pair of morphisms
 
 \[
-r_1 : T \rightarrow A
+r_1 : \mu{}F \rightarrow A
 \qquad
-r_2 : T \rightarrow B
+r_2 : \mu{}F \rightarrow B
 \]
 
 such that
