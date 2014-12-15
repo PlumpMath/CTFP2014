@@ -108,3 +108,39 @@ predicates through pattern matching on the number argument
     & h \circ F\,\fst{} \circ F\,\pair{\fold{h}}{\fold{k}} \qedhere
   \end{align*}
 \end{example}
+
+\begin{example}[Zygomorphisms are well-defined]
+
+  The zygomorphism over
+
+    \[
+      g : F\,\product{A}{B} \rightarrow A
+      \qquad
+      h : F\,B \rightarrow B
+    \]
+
+  is defined~(cf.\ definition~\ref{def:zygomorphism}) as the unique
+  arrow $f : \mu{}F \rightarrow A$ satisfying
+
+    \[f \circ \inalg = g \circ F\,\pair{f}{\fold{h}}\mbox{.}\]
+
+  Indeed, this equation has a unique solution. By
+  corollary~\ref{cor:mutumorphisms}, the arrows $g$ and $h \circ
+  F\,\snd{}$ uniquely determine $f$ and $fh$ s.t.
+
+    \begin{align*}
+    f \circ \inalg  &= g \circ F\,\pair{f}{fh} \\
+    fh \circ \inalg &= h \circ F\,\snd{} \circ F\,\pair{f}{fh} = \ldots = h \circ F\,fh
+    \end{align*}
+
+  What we did was make $h$ ``use'' the recursive result of $f$ to fit
+  it into the mutual recursion pattern stipulated by
+  theorem~\ref{thm:fokkinga}. The universal property of initial
+  algebras provides the missing link: $fh = \fold{h}$.
+
+  As already known from theorem~\ref{thm:zygomorphism-well-defined},
+  the zygomorphism can be constructed as $\fst{} \circ
+  \fold{(\pair{g}{(h \circ F\,\snd{})})}$. Now, this result is
+  immediately accessible through theorem~\ref{thm:fokkinga}.
+
+\end{example}

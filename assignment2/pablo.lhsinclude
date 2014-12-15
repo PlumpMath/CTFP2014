@@ -1,5 +1,5 @@
 
-\begin{definition}[Zygomorphisms]
+\begin{definition}[Zygomorphisms]\label{def:zygomorphism}
 
   Given a functor $F$ and arrows |g : F (A * B) -> A| and |h : F B ->
   B|, we define a \emph{zygomorphism} over |g| and |h| as the arrow
@@ -9,7 +9,7 @@
 
 \end{definition}
 
-\begin{theorem}[Well-definedness of zygomorphisms]
+\begin{theorem}[Well-definedness of zygomorphisms]\label{thm:zygomorphism-well-defined}
 
   The previous equation has exactly one solution for a given pair of
   arrows |g| and |h|. This solution is given by |f = snd . fold ((h . F fst) /_\  g)|.
