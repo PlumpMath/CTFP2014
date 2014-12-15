@@ -70,7 +70,8 @@ practice, we consider the problem of defining a function |noDups| to
 determine whether or not a list contains duplicates.
 
 This can be done by, in each step of a fold, checking that the current
-element occurs only once in the list. This check is itself a fold.
+element does not occur again in the tail of the list. This check is
+itself a fold.
 
 We first translate zygomorphisms to Haskell:
 
@@ -81,20 +82,20 @@ zygo :: (a -> t1 -> t1)
      -> [a]
      -> t
 zygo h z g [] = g (Left ())
-zygo h z g (x : xs) = g (Right (x, (zygo h z g xs, foldr h z (x : xs))))
+zygo h z g (x : xs) = g (Right (x, (zygo h z g xs, foldr h z xs)))
 \end{code}
 
-The fold for counting elements in a list |xs| should return a function |f|
-such that |f x| returns the number of occurrences of |x| in |xs|. This
-can be implemented as follows:
+The fold for checking than an element is not in a list |xs|, should
+return a function |f| such that |f x| returns |True| if |x| does not
+occur in |xs| and |False| otherwise.
 
 \begin{code}
 noDups :: Eq a => [a] -> Bool
 noDups = zygo f z g
-    where f x r y = r y + (if x == y then 1 else 0)
-          z = const 0
+    where f x r y = r y && x /= y
+          z = const True
           g (Left ()) = True
-          g (Right (x, (r, fh))) = r && fh x == 1
+          g (Right (x, (r, fh))) = r && fh x
 \end{code}
 % Local Variables:
 % mode: latex
