@@ -16,7 +16,7 @@ g \circ \inalg = k \circ F\,\pair{f}{g}
 \begin{proof}
 \begin{align*}
                 & \pair{f}{g} = \fold{(\pair{h}{k})} \\
-\Leftrightarrow & \mbox{\quad \{ universal property of folds \}} \\
+\Leftrightarrow & \mbox{\quad \{ universal property of initial algebras \}} \\
                 & \pair{f}{g} \circ \inalg = \pair{h}{k} \circ F\,\pair{f}{g} \\
 \Leftrightarrow & \mbox{\quad \{ fork fusion \}} \\
                 & \pair{(f \circ \inalg)}{(g \circ \inalg)} = \pair{(h \circ F\,\pair{f}{g})}{(k \circ F\,\pair{f}{g})} \\
