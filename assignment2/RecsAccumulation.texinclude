@@ -1,3 +1,47 @@
 \section{Accumulation Parameters}
+\begin{theorem}
+Suppose that we have a function $k$ and an value $e$ such that
+\begin{equation*}
+  k\ a\ e = a\ (\text{for all}\ a)
+\end{equation*}
+and
+\begin{equation*}
+  k \circ f = g \circ F k.
+\end{equation*}
+Then
+\begin{equation*}
+  \fold{f}\ x = \fold{g}\ x\ e.
+\end{equation*}
+\begin{proof}
+\begin{align*}
+    &\fold{f}\ x \\
+  \Leftrightarrow & \mbox{\quad \{ since $k\ a\ e = a$ \}} \\
+    & k\ (\fold{f}\ x)\ e \\
+  \Leftrightarrow & \mbox{\quad \{ composition \}} \\
+    & (k \circ \fold{f})\ x\ e \\
+  \Leftrightarrow & \mbox{\quad \{ we have $k \circ f = g \circ F k$ and fold fusion \}} \\
+    & \fold{g}\ x\ e \\
+\end{align*}
+\end{proof}
+\end{theorem}
 
-\textit{missing}
+\begin{theorem}
+  \begin{equation*}
+    \mathrm{accum}\ f = \fold{(\pair{\id{}}{\mathrm{splitjoin}\ \mathrm{snd}\ (f \circ \mathrm{fst})})}
+  \end{equation*}
+  where
+  \begin{equation*}
+    \mathrm{splitjoin}\ f\ g\ x = f\ x \circ g\ x
+  \end{equation*}
+\end{theorem}
+
+\subsection{Examples}
+\begin{verbatim}
+  fact a 0     = a
+  fact a (n+1) = fact (f a (n+1)) n
+
+  f a n = a * n
+
+  sum a []       = a
+  sum a (x : xs) = sum (f a x) xs
+\end{verbatim}
