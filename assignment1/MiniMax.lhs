@@ -26,6 +26,8 @@ the presentation in the paper we want to perform reductions without
 specifying the identity element each time, and relying on the
 associativity of our binary operator.
 
+> {-# LANGUAGE RecordWildCards #-}
+>
 > data Monoid a = Monoid
 >   {  identity  :: a
 >   ,  (<>)      :: a -> a -> a
@@ -53,12 +55,12 @@ since it has no identity element for |min| and |max|.  We fix that by
 defining:
 
 > data Number
->   =  Top
->   |  Bot
+>   =  Bot
 >   |  Z Integer
+>   |  Top
 >   deriving (Eq, Ord, Show, Read)
 
-Where |Top| represent $+\infty$, and |Bot| $-\infty$.
+Where |Bot| represents $-\infty$, and |Top| $+\infty$.
 
 We also define an incomplete |Num| instance for |Number|, so that we
 can use integer literals:
@@ -140,16 +142,16 @@ Using the specialization lemma, we can write
 
 where
 
-> help :: Number -> [Number] -> Number
-> help a xs = a `min` fold _Max xs
+> help1 :: Number -> [Number] -> Number
+> help1 a xs = a `min` fold _Max xs
 
 Since |min| distributes through |max| we have
 
-< help a = fold _Max . map (min a)
+< help1 a = fold _Max . map (min a)
 
 Using the specialization lemma a second time, we have
 
-< help a = foldl (\b c -> b `max` (a `min` c)) Bot
+< help1 a = foldl (\b c -> b `max` (a `min` c)) Bot
 
 \section{The alpha-beta algorithm}
 
@@ -211,11 +213,10 @@ where
 Furthermore, since
 
 < eval t  =  Top `min` (Bot `max` eval t)
-<         =  Top (help2 Bot) t
+<         =  help2 Bot Top t
 
-We have, without iventiveness, reduced the problem of calculating |eval
-t| to that of evaluationg |help2 a b t| for values of |a| and
-|b|.
+We have, without iventiveness, reduced the problem of calculating
+|eval t| to that of evaluting |help2 a b t| for values of |a| and |b|.
 
 Let us now expand the definition of |help2 a b t| in a similar way as
 we did for |help1 a t|. We obtain
