@@ -64,10 +64,10 @@ when calling |g|, we also pass it the result of folding over the current
 ``argument'' using |h|.
 
 \subsubsection{Tail of a list}
-To give some evidence of the practical usefulness of, we now show how
-to define |safeTail| as a zygomorphism.  To avoid reasoning about
-|undefined|, |safeTail| returns |[]| if an empty list is given as an
-argument.
+To give some evidence of the practical usefulness of zygomorphisms, we
+now show how to define |safeTail| as a zygomorphism.  To avoid
+reasoning about |undefined|, |safeTail| returns |[]| if an empty list
+is given as an argument.
 
 We first translate zygomorphisms to Haskell:
 
