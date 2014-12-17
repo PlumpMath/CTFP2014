@@ -6,3 +6,7 @@
 *.out
 *.agdai
 *.toc
+*.blg
+*.bbl
+*.fdb_latexmk
+*.fls

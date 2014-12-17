@@ -10,12 +10,10 @@ all : $(patsubst %.lhs,%.pdf,$(wildcard *.lhs))
 	latex $<
 	pdflatex $<
 
+RemoveDuplicates.pdf:: RemoveDuplicates.tex
+	latexmk -pdf RemoveDuplicates
+
+
 clean:
-	rm -f *.tex
-	rm -f *.dvi
-	rm -f *.pdf
-	rm -f *.aux
-	rm -f *.ptb
-	rm -f *.log
-	rm -f *.out
+	rm -f `cat ../.gitignore`
 
