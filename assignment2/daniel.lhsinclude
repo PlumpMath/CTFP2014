@@ -74,21 +74,22 @@ We first translate zygomorphisms to Haskell:
 \begin{code}
 zygo :: (a -> t1 -> t1)
      -> t1
-     -> (Either () (a, (t, t1)) -> t)
+     -> (a -> t -> t1 -> t)
+     -> t
      -> [a]
      -> t
-zygo h z g [] = g (Left ())
-zygo h z g (x : xs) = g (Right (x, (zygo h z g xs, foldr h z xs)))
+zygo h hz g gz [] = gz
+zygo h hz g gz (x : xs) = g x (zygo h hz g gz xs) (foldr h hz xs)
 \end{code}
 
 This allows us to define |safeTail| as follows:
 
 \begin{code}
-safeTail = zygo f z g
-  where f = (:)
-        z = []
-        g (Left ()) = []
-        g (Right (_, (_, t))) = t
+safeTail = zygo h hz g gz
+  where h = (:)
+        hz = []
+        gz = []
+        g _ _ t = t
 \end{code}
 
 \subsubsection{Checking a list for duplicates}
@@ -107,11 +108,11 @@ occur in |xs| and |False| otherwise.
 
 \begin{code}
 noDups :: Eq a => [a] -> Bool
-noDups = zygo f z g
+noDups = zygo f hz g gz
     where f x r y = r y && x /= y
-          z = const True
-          g (Left ()) = True
-          g (Right (x, (r, fh))) = r && fh x
+          hz = const True
+          gz = True
+          g x r fh = r && fh x
 \end{code}
 % Local Variables:
 % mode: latex
