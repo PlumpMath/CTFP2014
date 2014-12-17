@@ -100,7 +100,7 @@ Consider the case |otherwise|.
 \begin{spec}
   [] ... b == [<b>]
   (l // <a>) : xs ... b ==
-    (l // <a>) : (xs ... b) if a < b
+    (l // <a>) : (xs ... b) if a << b
     [paste ((l // <a>) : xs) // <b>] otherwise
 \end{spec}
 \end{corollary}

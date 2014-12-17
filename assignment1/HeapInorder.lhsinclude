@@ -37,6 +37,7 @@ Case $\langle \rangle$ is trivial:
 We distinguish the cases $a < b$ and $a \ge b$:
 
 \textbf{Case} $a < b$:
+%**TODO: what is happening with the "%" and "\\"-prefixed lines below?
 In this case we have:
 \begin{spec}
 inorder (< a > +++ u // < b > \\ v) 
