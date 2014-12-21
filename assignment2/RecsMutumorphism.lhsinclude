@@ -1,0 +1,162 @@
+\ignore{
+\begin{code}
+{-# LANGUAGE MultiParamTypeClasses #-}
+
+module RecsMutumorphism where
+
+import Recs
+
+mutu :: Inalg f uf => (f (a , b) -> a) -> (f (a , b) -> b) -> (uf -> (a , b))
+mutu f g = fold (pair f g)
+\end{code}
+}
+
+\begin{example}{Finite automata}
+%format FSentence = "F_" Sentence
+%format Sentence  = "\mathsf{Sentence}"
+%format Character = "\mathbf{Character}"
+%format Dot       = "\mathbf{Dot}"
+
+%format Symbol = "\mathsf{Symbol}"
+%format Eps    = "\mathbf{Eps}"
+%format Conc   = "\mathbf{Conc}"
+
+%format s1
+%format s2
+%format b1
+%format b2
+%format s1'
+%format s2'
+
+The transition functions of finite automata yield mutually recursive
+function definitions when modelled in a programming language, which
+we will use Haskell for. For instance, consider the automaton which
+is depicted in figure~\ref{fig:automaton}. It is given by a
+transition function on two states $s_1$ and $s_2$.
+
+\begin{figure}[h]
+\begin{center}
+\begin{tikzpicture}[->,>=latex,node distance=2.5cm,initial text=]
+\node[initial,state]   (u)              {$s_1$};
+\node[state,accepting] (f) [right of=u] {$s_2$};
+
+\path (u) edge [bend left,above]  node {.} (f)
+          edge [loop above,above] node {c} (u)
+      (f) edge [loop above,above] node {.} (f)
+          edge [bend left,below]  node {c} (u);
+\end{tikzpicture}
+\end{center}
+
+\caption{\label{fig:automaton}An automaton accepting the $\{\text{c},
+\text{.}\}$-inputs that end with a full stop.}
+\end{figure}
+
+We represent the inputs by lists of symbols from the respective
+alphabet. Each symbol corresponds to a constructor of the data type
+|Symbol|. Here, |Character| represents the input symbol "$\text{c}$"
+and |Dot| represents occurrences of "$\text{.}$".
+
+\begin{code}
+data Symbol = Character | Dot
+\end{code}
+
+In order to keep things simple, we avoid the parameterised data type
+|List| by using the isomorphic data type |Sentence| of lists with the
+fixed element type |Symbol| instead. This simplification is not too
+restrictive because the automaton model is not going to transform
+arbitrary lists but will consume a fixed set of input symbols.
+
+\begin{code}
+data Sentence     = Eps  | Conc  Symbol  Sentence
+\end{code}
+\ignore{
+\begin{code}
+data FSentence x  = E    | C     Symbol  x
+
+instance Inalg FSentence Sentence where
+        inalg E        = Eps
+        inalg (C c s)  = Conc c s
+
+        fold f Eps         = f E
+        fold f (Conc c s)  = f (C c (fold f s))
+\end{code}
+}
+
+For each state $s$, we specify a function |s| that looks at the first
+symbol $i$ in the input and passes the rest of the input to the
+function corresponding to the subsequent state $\delta(s, i)$, where
+$\delta$ denotes the automaton's transition function. An input $is$
+is accepted by an automaton with start state $s$ if and only if |s
+is| returns |True|. Back to our example, the specification of the
+state functions |s1| and |s2| looks as in
+figure~\ref{fig:modelspecification}.
+
+\begin{figure}[h]
+\begin{center}
+\begin{spec}
+s1  Eps                  == False
+s1  (Conc Character  s)  == s1 s
+s1  (Conc Dot        s)  == s2 s
+
+s2  Eps                  == True
+s2  (Conc Character  s)  == s1 s
+s2  (Conc Dot        s)  == s2 s
+\end{spec}
+\end{center}
+
+\caption{\label{fig:modelspecification} A specification of the
+functions modelling automaton states derived from the transition
+function.}
+\end{figure}
+
+The resulting function specifications are mutually recursive and fit
+into the scheme of mutumorphisms, that is there are arrows |s1'| and
+|s2'| such that the following diagrams commute.
+
+\begin{tikzpicture}
+  \matrix (m) [matrix of math nodes,row sep=3em,column sep=3em,minimum width=2em]
+  {
+     |FSentence Sentence|      & |Sentence| & |Sentence| & |FSentence Sentence|      \\
+     |FSentence (Bool , Bool)| & |Bool|     & |Bool|     & |FSentence (Bool , Bool)| \\};
+  \path[-stealth]
+    (m-1-1)              edge node [left]  {|FSentence (pair s1 s2)|} (m-2-1)
+                         edge node [above] {|inalg|}                  (m-1-2)
+    (m-2-1)              edge node [above] {|s1'|}                    (m-2-2)
+    (m-2-4)              edge node [above] {|s2'|}                    (m-2-3)
+    (m-1-4)              edge node [above] {|inalg|}                  (m-1-3)
+                         edge node [left]  {|FSentence (pair s1 s2)|} (m-2-4)
+                         (m-1-2) edge node [left] {|s1|}              (m-2-2)
+                         (m-1-3) edge node [left] {|s2|}              (m-2-3);
+\end{tikzpicture}
+
+The Haskell definitions witnessing the arrows in the Haskell category
+are straightforward. We can think of |b1| and |b2| as the Boolean
+values indicating whether $s_1$ and $s_2$ accept the tail of the
+input respectively.
+
+\begin{code}
+s1', s2' :: FSentence (Bool , Bool) -> Bool
+s1' E                         = True
+s1' (C Character  (b1 , b2))  = b2
+s1' (C Dot        (b1 , b2))  = b1
+s2' E                         = False
+s2' (C Character  (b1 , b2))  = b2
+s2' (C Dot        (b1 , b2))  = b1
+\end{code}
+
+Finally, the mutumorphism scheme lets us construct Haskell
+implementations of |s1| and |s2| as the two projections of |mutu s1'
+s2'|.
+
+\begin{code}
+s2, s1 :: Sentence -> Bool
+s1  = fst . mutu s1' s2'
+s2  = snd . mutu s1' s2'
+\end{code}
+
+It is true that the model specification in
+figure~\ref{fig:modelspecification} is already a valid Haskell
+program but by applying the recursion scheme we gain an
+implementation of the model that admits optimisation through fold
+fusion.
+\end{example}

@@ -7,6 +7,8 @@
 \usepackage{parskip}
 \usepackage{verbatim}
 \usepackage{hyperref}
+\usepackage{tikz}
+\usetikzlibrary{arrows,automata,matrix}
 \bibliographystyle{acm}
 \bibliography{ctfp}
 \newtheorem{theorem}{Theorem}
@@ -106,6 +108,7 @@ instance Inalg FNat Nat where
 
 %include RecsZygomorphism.lhsinclude
 \input{RecsMutumorphism.texinclude}
+%include RecsMutumorphism.lhsinclude
 \input{RecsAccumulation.texinclude}
 \input{RecsNestedDatatypes.texinclude}
 \input{RecsIndexedDatatypes.texinclude}
