@@ -1,5 +1,11 @@
+%if false
+
+> {-# LANGUAGE RecordWildCards #-}
+
+%endif
+
 \documentclass{article}
-\include{amsmath}
+\usepackage{amsmath}
 \usepackage{amsthm}
 \theoremstyle{plain}
 
@@ -53,12 +59,17 @@ since it has no identity element for |min| and |max|.  We fix that by
 defining:
 
 > data Number
->   =  Top
->   |  Bot
+>   =  Bot
 >   |  Z Integer
+>   |  Top
+
+%if false
+
 >   deriving (Eq, Ord, Show, Read)
 
-Where |Top| represent $+\infty$, and |Bot| $-\infty$.
+%endif
+
+Where |Bot| represents $-\infty$, and |Top| $+\infty$.
 
 We also define an incomplete |Num| instance for |Number|, so that we
 can use integer literals:
@@ -116,7 +127,7 @@ is some useful lemmas regarding |map| and |fold|.
 Every homomorphism on lists can be expressed as a left (or also a
 right) reduction.  More precisely,
 
-< fold m . map f = foldl (\a b -> a <> f b) identity 
+< fold m . map f = foldl (\a b -> a <> f b) identity
 
 Where |m| is some |Monoid| with identity |identity| and binary
 operator |<>|.
@@ -140,16 +151,16 @@ Using the specialization lemma, we can write
 
 where
 
-> help :: Number -> [Number] -> Number
-> help a xs = a `min` fold _Max xs
+> help1 :: Number -> [Number] -> Number
+> help1 a xs = a `min` fold _Max xs
 
 Since |min| distributes through |max| we have
 
-< help a = fold _Max . map (min a)
+< help1 a = fold _Max . map (min a)
 
 Using the specialization lemma a second time, we have
 
-< help a = foldl (\b c -> b `max` (a `min` c)) Bot
+< help1 a = foldl (\b c -> b `max` (a `min` c)) Bot
 
 \section{The alpha-beta algorithm}
 
@@ -211,11 +222,10 @@ where
 Furthermore, since
 
 < eval t  =  Top `min` (Bot `max` eval t)
-<         =  Top (help2 Bot) t
+<         =  help2 Bot Top t
 
-We have, without iventiveness, reduced the problem of calculating |eval
-t| to that of evaluationg |help2 a b t| for values of |a| and
-|b|.
+We have, without iventiveness, reduced the problem of calculating
+|eval t| to that of evaluting |help2 a b t| for values of |a| and |b|.
 
 Let us now expand the definition of |help2 a b t| in a similar way as
 we did for |help1 a t|. We obtain
@@ -229,8 +239,8 @@ the dual-distributive law
 < b `min` (a `max` c) = (b `min` a)  `max` (b `min` c)
 
 and the fact that evaluation of |help2 a b t| is required only for
-values of |a| and |b| satisfying |a = a `min` b|, in other words,
-for $a \leq b$.  In such case we have
+values of |a| and |b| satisfying |a == a `min` b|, in other words,
+for |a <= b|.  In such case we have
 
 < b `min` (a `max` c) = a  `max` (b `min` c)
 
