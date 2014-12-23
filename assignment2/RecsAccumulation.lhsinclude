@@ -1,0 +1,417 @@
+\section{Accumulation Parameters}
+
+\begin{theorem}
+\label{thm:accum}
+Suppose that we have a function |k| and an value |e| such that
+
+< apply (k a, e) = a (for all a)
+
+and
+
+< k . f = g . F k
+
+Then
+
+< fold f x = apply (fold g x, e)
+
+\begin{proof}
+
+  We compute:
+
+\begin{spec}
+  fold f x
+  <=> {- since |apply (x a, e) = a| -}
+  apply (k (fold f x), e)
+  <=> {- composition -}
+  apply ((k . fold f) x, e)
+  <=> {- fold fusion with |k . f = g . F k| -}
+  apply (fold g x, e)
+\end{spec}
+\end{proof}
+\end{theorem}
+The relevant types for theorem~\ref{thm:accum} are documented in the diagram in
+figure~\ref{fig:accumtypes}.
+\begin{figure}[h]
+  \centering
+  \begin{displaymath}
+    \xymatrix{
+      T \ar[d]_{\fold{f}} & F T   \ar[l]_{\inalg{}} \ar[d]^{F (\fold{f})} \\
+      A \ar[d]_{k}        & F A   \ar[l]_{f}        \ar[d]^{F k}          \\
+      A^E                 & F A^E \ar[l]^{g}                              \\
+      T \ar[u]^{\fold{g}} & F T   \ar[l]^{\inalg{}} \ar[u]_{F (\fold{g})}
+    }
+  \end{displaymath}
+  \label{fig:accumtypes}
+  \caption{Type diagram for theorem~\ref{thm:accum}}
+\end{figure}
+
+\subsection{Applications}
+
+In the following section a few applications of theorem~\ref{thm:accum} on lists
+and trees are shown.
+
+\subsubsection{Convert cons list to snoc list}
+
+\begin{example}[Cons list to snoc list]
+\label{ex:convert}
+The function |convert : listl A -> listr A| converts a snoc list to a cons list
+and can be defined as
+
+< convert = fold (nil \_/ snocr)
+
+where
+
+< data listl A = nil | snoc (listl A, A)
+< data listr A = nil | cons (A, listr A)
+<
+< snocr (x, a) = cat x [a]
+<
+< cat x y      = x ++ y
+
+This is very slow as |snocr| has to traverse the entire list every time to
+append an element resulting in a time complexity of $O(n^2)$. We can speed this
+up by using an accumulation parameter, reducing the complexity to $O(n)$.
+
+If we take
+
+< f = nil \_/ snocr
+< k = cat
+< e = nil
+
+we can compute
+
+\begin{spec}
+  cat . (nil \_/ snocr) = g . F cat
+  <=> {- definition of |F| -}
+  cat . (nil \_/ snocr) = g . (id + (cat * id))
+  <=> {- introduce |g = g0 \_/ g1| -}
+  cat . (nil \_/ snocr) = (g0 \_/ g1) . (id + (cat * id))
+  <=> {- coproducts and identity -}
+  cat . nil \_/ cat . snocr = g0 \_/ (g1 . (cat * id))
+  <=> {- introduce points -}
+  (cat . nil \_/ cat . snocr) x y = (g0 \_/ (g1 . (cat * id))) x y
+\end{spec}
+Case on |x : listl A|.
+
+\textbf{Case} |x = nil|
+\begin{spec}
+  (cat . nil \_/ cat . snocr) nil y = (g0 \_/ (g1 . (cat * id))) nil y
+  <=> {- application -}
+  (cat . nil) nil y = g0 nil y
+  <=> {- application -}
+  cat nil y = g0 nil y
+  <=> {- definition of |cat| -}
+  y = g0 nil y
+  <=> {- |nil = x| -}
+  y = g0 x y
+\end{spec}
+\textbf{Case} |x = snoc (x', a)|
+\begin{spec}
+  (cat . nil \_/ cat . snocr) (snoc (x', a)) y =
+    (g0 \_/ (g1 . (cat * id))) (snoc (x', a)) y
+  <=> {- application -}
+  (cat . snocr) (x', a) y = (g1 . (cat * id)) (x', a) y
+  <=> {- application and identity -}
+  cat (snocr (x', a)) y = g1 (cat x', a) y
+  <=> {- definition of |snocr| -}
+  cat (cat x' [a]) y = g1 (cat x', a) y
+  <=> {- associativity of |cat| and |cat [x] y = cons (x, y)| -}
+  cat x' (cons (a, y)) = g1 (cat x', a) y
+  <=> {- introduce |h = cat x'| -}
+  h (cons (a, y)) = g1 (h, a) y
+\end{spec}
+
+Thus by theorem~\ref{thm:accum} we can conclude that for
+
+< g0 x y       = y
+< g1 (h, a) y  = h (cons (a, y))
+< g            = g0 \_/ g1
+
+the following holds
+
+< convert x = fold (nil \_/ snocr) x = fold g x nil
+\end{example}
+
+\subsubsection{Reversing a cons list}
+
+\begin{example}[Reversing a cons list]
+The function |reverse : listr A -> listr A| can be defined as
+
+< reverse = fold (nil \_/ snocr)
+
+where (notice flipped arguments from previous |snocr|)
+
+< snocr (a, x) = cat x [a]
+
+This is very similar to |convert| in example~\ref{ex:convert}. The only
+difference is the definition of the functor |F|, that is the |F|-algebra we
+fold over. In the case of |convert| the |F|-algebra is |listl| while for
+|reverse| the |F|-algebra is |listr|. The only difference being the flip of the
+|*| functor arguments. Thus we will get the same thing as in example 5 but with
+|id * cat| instead of |cat * id|.
+
+For theorem~\ref{thm:accum} we again take
+
+< f = nil \_/ snocr
+< k = cat
+< e = nil
+
+and do the same calculations as in example~\ref{ex:convert} and we get
+
+\begin{spec}
+  (cat . nil \_/ cat . snocr) x y = (g0 \_/ (g1 . (id * cat))) x y
+\end{spec}
+Case on |x : listr A|.
+
+\textbf{Case} |x = nil|
+\begin{spec}
+  (cat . nil \_/ cat . snocr) nil y = (g0 \_/ (g1 . (id * cat))) nil y
+  <=> {- application and definition of |cat| -}
+  y = g0 nil y
+  <=> {- |nil = x| -}
+  y = g0 x y
+\end{spec}
+\textbf{Case} |x = cons (a, x')|
+\begin{spec}
+  (cat . nil \_/ cat . snocr) (cons (a, x')) y =
+    (g0 \_/ (g1 . (id * cat))) (cons (a, x')) y
+  <=> {- application -}
+  (cat . snocr) (a, x') y = (g1 . (id * cat)) (a, x') y
+  <=> {- application and identity -}
+  cat (snocr (a, x')) y = g1 (a, cat x') y
+  <=> {- definition of |snocr| -}
+  cat (cat x' [a]) y = g1 (a, cat x') y
+  <=> {- associativity of |cat| and |cat [x] y = cons (x, y)| -}
+  cat x' (cons (a, y)) = g1 (a, cat x') y
+  <=> {- introduce |h = cat x'| -}
+  h (cons (a, y)) = g1 (a, h) y
+\end{spec}
+
+Thus by theorem~\ref{thm:accum} we can conclude that for
+
+< e            = nil
+< g0 x y       = y
+< g1 (a, h) y  = h (cons (a, y))
+< g            = g0 \_/ g1
+
+the following holds
+
+< reverse x = fold (nil \_/ snocr) x = fold g x nil
+\end{example}
+
+\subsubsection{Tree depth}
+
+\begin{example}[Tree depth]
+We can define a function |depths : tree A -> tree nat| which turns any tree
+into a tree of its depths and can be defined as
+
+< depths = tri (+1) . tree zero
+
+where |tri| is the triangle function from the Ruby circuit design language,
+|tree : (A -> B) -> tree A -> tree B| the type functor for trees, |(+1) : nat
+-> nat| is addition with one and |zero : nat -> nat| is the constant function
+which returns |0|.
+
+First we will calculate what |fold f| represents |depths|.
+
+\begin{spec}
+  depths
+  = {- definition -}
+  tri (+1) . tree zero
+  = {- definition of |tri| -}
+  fold ((tip \_/ bin) . (id + tree (+1) * tree (+1))) . tree zero
+  = {- type functor fold fusion -}
+  fold ((tip \_/ bin) . (id + tree (+1) * tree (+1)) . (zero + id * id))
+  = {- coproducts and identities -}
+  fold ((tip . zero) \_/ (bin . (tree (+1) * tree (+1))))
+  = {- introduce |f| -}
+  fold f
+\end{spec}
+
+This definition is again slow since it in every fold step traverses the entire
+remaining subtree. We can apply theorem\ref{thm:accum} to optimize this
+definition. We choose
+
+< f      = (tip . zero) \_/ (bin . (tree (+1) * tree (+1)))
+< k a n  = tree (+n) a
+< e      = 0
+
+Then we can calculate a definition for |g|
+
+\begin{spec}
+  k . f = g . F k
+  <=> {- definition of |F| -}
+  k . f = g . (id + k * k)
+  <=> {- introduce |g = g0 \_/ g1| -}
+  k . f = (g0 \_/ g1) . (id + k * k)
+  <=> {- |\_/ . +| fusion -}
+  k . f = (g0 . id) \_/ (g1 . k * k)
+  <=> {- identity -}
+  k . f = g0 \_/ (g1 . k * k)
+  <=> {- introduce points |x| and |n| -}
+  k (f x) n = (g0 \_/ (g1 . k * k)) x n
+  <=> {- definition of |f| -}
+  k (((tip . zero) \_/ (bin . (tree (+1) * tree (+1)))) x) n =
+    (g0 \_/ (g1 . k * k)) x n
+\end{spec}
+Case on |x : tree A|.
+
+\textbf{Case} |x = tip c|
+\begin{spec}
+  k (tip (zero c)) n = g0 c n
+  <=> {- definition of |k| and write |zero c| as |0| -}
+  tree (+n) (tip 0) = g0 c n
+  <=> {- application of |tree| over |tip| -}
+  tip (0+n) = g0 c n
+  <=> {- rules of addition -}
+  tip n = g0 c n
+\end{spec}
+\textbf{Case} |x = bin (l, r)|
+\begin{spec}
+  k ((bin . (tree (+1) * tree (+1))) (l, r)) n = (g1 . (k * k)) (l, r) n
+  <=> {- application and definition of |*| -}
+  k (bin (tree (+1) l, tree (+1) r)) n = g1 (k l, k r) n
+  <=> {- definition of |k| -}
+  tree (+n) (bin (tree (+1) l, tree (+1) r)) =
+    g1 (\m -> tree (+m) l, \m -> tree (+m) r) n
+  <=> {- |tree| applied over |bin| and |tree| fusion -}
+  bin (tree (+n . +1) l, tree (+n . +1) r) =
+    g1 (\m -> tree (+m) l, \m -> tree (+m) r) n
+  <=> {- introduce |h0 m = tree (+m) l| and |h1 m = tree (+m) r| -}
+  bin (h0 (n+1), tf (n+1)) = g1 (h0, h1) n
+\end{spec}
+
+Thus by theorem~\ref{thm:accum} we can conclude that for
+
+< e              = nil
+< g0 c n         = tip n
+< g1 (h0, h1) n  = bin (h0 (n+1), h1 (n+1))
+< g              = g0 \_/ g1
+
+the following holds
+
+< depths x = tri (+1) (tree zero x) = fold g x e
+\end{example}
+
+\subsubsection{Minimum tree depth}
+
+\begin{example}[Minimum tree depth]
+We can define both the maximum (`normal') and minimum depth of a tree by
+
+< depth     = max . depths
+< mindepth  = min . depths
+
+where (|bmax (a, b)| is the maximum of |a| and |b| and conversly bmin is the
+minimum)
+
+< max = fold (id \_/ bmax)
+< min = fold (id \_/ bmin)
+
+We will use Horner's rule to rewrite the definition of |mindepth|. From the
+rule and definition of |min| and |depths| we will require that
+
+\begin{spec}
+  succ . (id \_/ bmin) = (id \_/ bmin) . F (succ, succ)
+  <=> {- definition of F -}
+  succ . (id \_/ bmin) = (id \_/ bmin) . (succ + succ * succ)
+  <=> {- coproducts and identities -}
+  succ \_/ (succ . bmin) = succ \_/ (bmin . (succ * succ))
+  <=> {- equality of |\_/| and first case true -}
+  succ . bmin = bmin . (succ * succ)
+  <=> {- |succ| monotonic -}
+  true
+\end{spec}
+
+Now we can apply Horner's rule on |mindepth|
+
+\begin{spec}
+  mindepth
+  = {- definitions -}
+  fold (id \_/ bmin) . tri succ . tree zero
+  = {- Horner's rule -}
+  fold ((id \_/ bmin) . (id + succ * succ)) . tree zero
+  = {- type functor fusion -}
+  fold ((id \_/ bmin) . (id + succ * succ) . (zero + id * id))
+  = {- coproducts and identities -}
+  fold (zero \_/ (bmin . (succ * succ)))
+\end{spec}
+
+Again we will optimize this by introducing an accumulation parameter with
+theorem~\ref{thm:accum}. Choose
+
+< f           = zero \_/ (bmin . (succ * succ))
+< k a (n, m)  = bmin (a+n, m)
+< e           = (0, infinity)
+
+Then we calculate an definition of |g|
+
+\begin{spec}
+  k . f = g . F k
+  <=> {- definition of |F|, introduce |g = g0 \_/ g1|, and coproducts -}
+  k . f = g0 \_/ (g1 . k * k)
+  <=> {- introduce points -}
+  k (f x) (n, m) = (g0 \_/ (g1 . k * k)) x (n, m)
+  <=> {- definiton of |k| -}
+  bmin (f x + n, m) = (g0 \_/ (g1 . k * k)) x (n, m)
+  <=> {- definiton of |f| -}
+  bmin ((zero \_/ (bmin . (succ * succ))) x + n, m) =
+    (g0 \_/ (g1 . k * k)) x (n, m)
+\end{spec}
+Case on |x : tree A|.
+
+\textbf{Case} |x = tip c|
+\begin{spec}
+  bmin ((zero \_/ (bmin . (succ * succ))) (tip c) + n, m) =
+    (g0 \_/ (g1 . k * k)) (tip c) (n, m)
+  <=> {- application -}
+  bmin (zero c + n, m) = g0 c (n, m)
+  <=> {- rules of addition -}
+  bmin (n, m) = g0 c (n, m)
+\end{spec}
+\textbf{Case} |x = bin (l, r)|
+\begin{spec}
+  bmin ((zero \_/ (bmin . (succ * succ))) (bin (l, r)) + n, m) =
+    (g0 \_/ (g1 . k * k)) (bin (l, r)) (n, m)
+  <=> {- application -}
+  bmin ((bmin . (succ * succ)) (l, r) + n, m) = (g1 . k * k) (l, r) (n, m)
+  <=> {- application -}
+  bmin (bmin (l+1, r+1) + n, m) = g1 (k l, k r) (n, m)
+  <=> {- |(+n)| monotonic and laws of addition -}
+  bmin (bmin (l+n+1, r+n+1), m) = g1 (k l, k r) (n, m)
+  <=>
+  bmin (bmin (l+n+1, r+n+1), m) = g1 (
+    \(n', m') -> bmin (l + n', m'),
+    \(n', m') -> bmin (r + n', m'))
+    (n, m)
+  <=>
+  bmin (bmin (l+n+1, r+n+1), m) = g1 (h0, h1) (n, m)
+\end{spec}
+Case on |m : nat|.
+
+\textbf{Case} |m <= n+1|
+\begin{spec}
+  bmin (bmin (l+n+1, r+n+1), m) = g1 (h0, h1) (n, m)
+  <=> {- |m <= (a+n)+1 | for |a >= 0| -}
+  m = g1 (h0, h1) (n, m)
+\end{spec}
+\textbf{Case} |otherwise| % m > n+1 == m >= n+2
+\begin{spec}
+  bmin (bmin (l+n+1, r+n+1), m) = g1 (h0, h1) (n, m)
+  <=> {- |m| is larger -}
+  bmin (l+n+1, r+n+1) = g1 (h0, h1) (n, m)
+  <=> {- definition of |h0| and |h1| -}
+  h0 (n+1, h1 (r+n, m)) = g1 (h0, h1) (n, m)
+\end{spec}
+
+Thus we have that for
+
+< g0 a (n, m)         = min (n, m)
+< g1 (h0, h1) (n, m)  = m, if m <= n +1
+<                     = h0 (n+1, h1 (n+1, m)), otherwise
+< g = g0 \_/ g1
+
+the following holds
+
+< mindepth x = min (depths x) = fold g x nil
+
+\end{example}

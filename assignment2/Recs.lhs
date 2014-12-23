@@ -8,9 +8,10 @@
 \usepackage{verbatim}
 \usepackage{hyperref}
 \usepackage{tikz}
+\usepackage{xypic}
 \usetikzlibrary{arrows,automata,matrix}
-\bibliographystyle{acm}
-\bibliography{ctfp}
+%\bibliographystyle{acm}
+%\bibliography{ctfp}
 \newtheorem{theorem}{Theorem}
 \newtheorem{definition}{Definition}
 \newtheorem{lemma}{Lemma}
@@ -123,7 +124,7 @@ type Nat     = Mu FNat
 %include RecsZygomorphism.lhsinclude
 \input{RecsMutumorphism.texinclude}
 %include RecsMutumorphism.lhsinclude
-\input{RecsAccumulation.texinclude}
+%include RecsAccumulation.lhsinclude
 \input{RecsNestedDatatypes.texinclude}
 \input{RecsIndexedDatatypes.texinclude}
 \end{document}
