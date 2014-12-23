@@ -32,7 +32,8 @@
 \newcommand{\fold}[1]{\mathrm{fold}\,#1}
 %include polycode.fmt
 
-%format uF     = "\mu{}F"
+%format Mu     = "\mu{}"
+%%format Mu F  = "\mu{}" F
 %format inalg  = "\inalg"
 %format fold f = "\fold{" f "}"
 
@@ -60,7 +61,7 @@
 \begin{document}
 \ignore{
 \begin{code}
-{-# LANGUAGE MultiParamTypeClasses #-}
+{-# LANGUAGE DeriveFunctor #-}
 
 module Recs where
 \end{code}
@@ -86,23 +87,36 @@ plus :: (a -> c) -> (b -> d) -> (Either a b -> Either c d)
 plus f _ (Left  a) = Left  (f a)
 plus _ g (Right b) = Right (g b)
 
-class {- Functor f => -} Inalg f uF where
-  -- The initial F-algebra.
-  inalg :: f uF -> uF
+-- functor f, carrier a
+type Algebra f a = f a -> a
 
-  -- Given another F-algebra f, yields the unique arrow inalg → f.
-  --
-  -- > fold f . inalg == f . fmap f
-  fold  :: (f a -> a) -> uF -> a
+-- the (!) fix point of f
+--
+-- < M . unM == id :: Mu f     -> Mu f
+-- < unM . M == id :: f (Mu f) -> f (Mu f)
+newtype Mu f = M { unM :: f (Mu f) }
 
-data FNat x  = Z     | S x
-data Nat     = Zero  | Succ Nat
-instance Inalg FNat Nat where
-        inalg Z     = Zero
-        inalg (S n) = Succ n
+inalg :: Algebra f (Mu f)
+inalg = M
 
-        fold f Zero     = f Z
-        fold f (Succ n) = f (S (fold f n))
+fold, cata :: Functor f => Algebra f a -> (Mu f -> a)
+fold f (M x)  = f (fmap (fold f) x)
+cata f        = fold f
+--cata f = para (f . fmap fst)
+
+para :: Functor f => (f (a , Mu f) -> a) -> (Mu f -> a)
+para f = fst . fold (pair f (inalg . fmap snd))
+--para f = zygo f inalg
+
+zygo :: Functor f => (f (a , b) -> a) -> Algebra f b -> (Mu f -> a)
+zygo f h = fst . fold (pair f (h . fmap snd))
+--zygo f h = fst . mutu f (h . fmap snd)
+
+mutu :: Functor f => (f (a , b) -> a) -> (f (a , b) -> b) -> (Mu f -> (a , b))
+mutu f g = fold (pair f g)
+
+data FNat x  = Zero  | Succ x deriving Functor
+type Nat     = Mu FNat
 \end{code}
 }
 

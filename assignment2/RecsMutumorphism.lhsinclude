@@ -1,13 +1,10 @@
 \ignore{
 \begin{code}
-{-# LANGUAGE MultiParamTypeClasses #-}
+{-# LANGUAGE DeriveFunctor #-}
 
 module RecsMutumorphism where
 
 import Recs
-
-mutu :: Inalg f uf => (f (a , b) -> a) -> (f (a , b) -> b) -> (uf -> (a , b))
-mutu f g = fold (pair f g)
 \end{code}
 }
 
@@ -67,18 +64,12 @@ restrictive because the automaton model is not going to transform
 arbitrary lists but will consume a fixed set of input symbols.
 
 \begin{code}
-data Sentence     = Eps  | Conc  Symbol  Sentence
+type Sentence     = Mu FSentence
+data FSentence x  = Eps | Conc Symbol x
 \end{code}
 \ignore{
 \begin{code}
-data FSentence x  = E    | C     Symbol  x
-
-instance Inalg FSentence Sentence where
-        inalg E        = Eps
-        inalg (C c s)  = Conc c s
-
-        fold f Eps         = f E
-        fold f (Conc c s)  = f (C c (fold f s))
+        deriving Functor
 \end{code}
 }
 
@@ -136,12 +127,12 @@ input respectively.
 
 \begin{code}
 s1', s2' :: FSentence (Bool , Bool) -> Bool
-s1' E                         = True
-s1' (C Character  (b1 , b2))  = b2
-s1' (C Dot        (b1 , b2))  = b1
-s2' E                         = False
-s2' (C Character  (b1 , b2))  = b2
-s2' (C Dot        (b1 , b2))  = b1
+s1' Eps                          = True
+s1' (Conc Character  (b1 , b2))  = b2
+s1' (Conc Dot        (b1 , b2))  = b1
+s2' Eps                          = False
+s2' (Conc Character  (b1 , b2))  = b2
+s2' (Conc Dot        (b1 , b2))  = b1
 \end{code}
 
 Finally, the mutumorphism scheme lets us construct Haskell
