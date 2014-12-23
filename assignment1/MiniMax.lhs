@@ -1,5 +1,11 @@
+%if false
+
+> {-# LANGUAGE RecordWildCards #-}
+
+%endif
+
 \documentclass{article}
-\include{amsmath}
+\usepackage{amsmath}
 \usepackage{amsthm}
 \theoremstyle{plain}
 
@@ -26,8 +32,6 @@ the presentation in the paper we want to perform reductions without
 specifying the identity element each time, and relying on the
 associativity of our binary operator.
 
-> {-# LANGUAGE RecordWildCards #-}
->
 > data Monoid a = Monoid
 >   {  identity  :: a
 >   ,  (<>)      :: a -> a -> a
@@ -58,7 +62,12 @@ defining:
 >   =  Bot
 >   |  Z Integer
 >   |  Top
+
+%if false
+
 >   deriving (Eq, Ord, Show, Read)
+
+%endif
 
 Where |Bot| represents $-\infty$, and |Top| $+\infty$.
 
@@ -118,7 +127,7 @@ is some useful lemmas regarding |map| and |fold|.
 Every homomorphism on lists can be expressed as a left (or also a
 right) reduction.  More precisely,
 
-< fold m . map f = foldl (\a b -> a <> f b) identity 
+< fold m . map f = foldl (\a b -> a <> f b) identity
 
 Where |m| is some |Monoid| with identity |identity| and binary
 operator |<>|.
@@ -230,8 +239,8 @@ the dual-distributive law
 < b `min` (a `max` c) = (b `min` a)  `max` (b `min` c)
 
 and the fact that evaluation of |help2 a b t| is required only for
-values of |a| and |b| satisfying |a = a `min` b|, in other words,
-for $a \leq b$.  In such case we have
+values of |a| and |b| satisfying |a == a `min` b|, in other words,
+for |a <= b|.  In such case we have
 
 < b `min` (a `max` c) = a  `max` (b `min` c)
 
