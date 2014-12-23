@@ -3,8 +3,6 @@
 \usepackage{amsthm}
 \usepackage{parskip}
 \usepackage{verbatim}
-\bibliographystyle{acm}
-\bibliography{ctfp}
 \newtheorem{theorem}{Theorem}
 \newtheorem{definition}{Definition}
 \newtheorem{lemma}{Lemma}
@@ -65,4 +63,8 @@ test1  = Bin Nil 3 Nil
 %include HeapLeftfold.lhsinclude
 %include HeapPaste.lhsinclude
 %include Heapheapyheapy5point8.lhsinclude
+
+\bibliographystyle{acm}
+\bibliography{../ctfp}
+
 \end{document}

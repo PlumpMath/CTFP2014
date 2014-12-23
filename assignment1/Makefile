@@ -7,13 +7,20 @@ all : $(patsubst %.lhs,%.pdf,$(wildcard *.lhs))
 	agda -i. --latex --latex-dir=. $?
 
 %.pdf: %.tex $(wildcard $@*.texinclude)
-	latex $<
-	pdflatex $<
-
-RemoveDuplicates.pdf:: RemoveDuplicates.tex
-	latexmk -pdf RemoveDuplicates
-
+	latexmk -pdf $*
 
 clean:
-	rm -f `cat ../.gitignore`
+	rm -f *.tex
+	rm -f *.dvi
+	rm -f *.pdf
+	rm -f *.aux
+	rm -f *.ptb
+	rm -f *.log
+	rm -f *.out
+	rm -f *.agdai
+	rm -f *.toc
+	rm -f *.blg
+	rm -f *.bbl
+	rm -f *.fdb_latexmk
+	rm -f *.fls
 
