@@ -1,0 +1,35 @@
+\newcommand{\thick}[1]{$\mathbb{#1}$}
+
+\subsection{Perfect Trees}
+
+Perfect (binary) trees may be represented via the data type:
+
+\begin{spec}
+  data PTree a = PLeaf a | PNode (PTree (a,a))
+\end{spec}
+
+Where |a| is some other data type, namely that for which leaves acquire values.
+|PTree| is a functor in itself whose action on objects (data types in this
+context) is already given by the data type declaration whilst on arrows,
+implementation-wise, we could express it as
+
+\begin{spec}
+  instance Functor PTree where
+    fmap f (PLeaf a) = PLeaf (f a)
+    fmap f (PNode pt) = fmap (cross f f) pt
+\end{spec}
+
+Let us from now on abbreviate |PT| for |PTree|, |PL| for |PLeaf| and |PN| for
+|PNode|. Given an argument datatype can be regarded as a categorical object in
+\thick{F}un.
+
+Due to the recursion, we will define the datatype as a fixed piont of some
+functor which works in the category of functors
+
+\begin{equation*}
+  F : {\mathbb{F}}^{\mathbb{F}un} \rightarrow {\mathbb{F}}^{\mathbb{F}un}
+\end{equation*}
+
+Since the recursion in the datatype establishes an isomorphism between the
+very plain 
+

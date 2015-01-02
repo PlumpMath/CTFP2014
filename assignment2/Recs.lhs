@@ -126,5 +126,6 @@ type Nat     = Mu FNat
 %include RecsMutumorphism.lhsinclude
 %include RecsAccumulation.lhsinclude
 \input{RecsNestedDatatypes.texinclude}
+%include RecsNestedDatatypes.lhsinclude
 \input{RecsIndexedDatatypes.texinclude}
 \end{document}
