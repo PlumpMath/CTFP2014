@@ -4,6 +4,7 @@
 %format \_/ = "\mathop{\triangledown}"
 %format <=> = "\Leftrightarrow"
 %format mu = "\mu\!\!"
+%format <== = "\Leftarrow"
 
 \section{Zygomorphisms}
 \def\commentbegin{\quad\{\ }
