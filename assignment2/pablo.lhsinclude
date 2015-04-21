@@ -9,16 +9,10 @@
 
 \end{definition}
 
-\begin{theorem}[Well-definedness of zygomorphisms]\label{thm:zygomorphism-well-defined}
+Let us derive a unique solution to the previous equation for a given
+pair of arrows |g| and |h|.
 
-  The previous equation has exactly one solution for a given pair of
-  arrows |g| and |h|. This solution is given by |f = snd . fold ((h . F fst) /_\  g)|.
-
-\end{theorem}
-
-\begin{proof}
-
-  We compute:
+We compute:
 
 \begin{spec}
   f . in = g . F (fold h /_\ f)
@@ -39,5 +33,12 @@
   f = snd . fold ((h . F fst) /_\  g)
 \end{spec}
 
-\end{proof}
+Therefore, the unique solution to the zygomorphism equation is given
+by |f = snd . fold ((h . F fst) /_\ g)|. This ensures that the
+zygomorphism recursion scheme is well-defined and uniquely determined
+by the choice of |g| and |h|, so we can define |zygo g h = snd . fold
+((h . F fst) /_\ g)|.
 
+%\begin{theorem}[Well-definedness of zygomorphisms]\label{thm:zygomorphism-well-defined}
+%The zygomorphism recursion scheme is well-defined.
+%\end{theorem}
