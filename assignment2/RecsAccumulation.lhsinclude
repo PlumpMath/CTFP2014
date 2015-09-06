@@ -20,11 +20,11 @@ Then
 
 \begin{spec}
   fold f x
-  <=> {- since |apply (x a, e) = a| -}
+<=> {- since |apply (x a, e) = a| -}
   apply (k (fold f x), e)
-  <=> {- composition -}
+<=> {- composition -}
   apply ((k . fold f) x, e)
-  <=> {- fold fusion with |k . f = g . F k| -}
+<=> {- fold fusion with |k . f = g . F k| -}
   apply (fold g x, e)
 \end{spec}
 \end{proof}

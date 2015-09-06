@@ -10,7 +10,7 @@ the universal property of zygomorphisms. To find this |f|, we compute:
 
 \begin{spec}
   para f . in  = g . F (fold h /_\ para f)
-  <=> {- universal property of paramorphisms -}
+<=> {- universal property of paramorphisms -}
   f . F (id /_\ para f) = g . F (fold h /_\ para f)
 \end{spec}
 
@@ -20,24 +20,24 @@ composing |g| with |F (a * b)| allows further simplification of the left-hand
 side using properties of functors and the fusion law for |/_\| and |*|:
 
 \begin{spec}
-  f . F (id /_\ para f) = g . F (fold h /_\ para f)
-  <== {- guess for ``shape'' of |f| -}
-  g . F (a * b) . F (id /_\ para f) = g . F (fold h /_\ para f)
-  <=> {- |*| / |/_\| fusion -}
-  g . F ((a . id) /_\ (b . para f)) = g . F (fold h /_\ para f)
-  <=> {- identity -}
-  g . F (a /_\ (b . para f)) = g . F (fold h /_\ para f)
+  f . F (id /_\ para f)              = g . F (fold h /_\ para f)
+<== {- guess for ``shape'' of |f| -}
+  g . F (a * b) . F (id /_\ para f)  = g . F (fold h /_\ para f)
+<=> {- |*| / |/_\| fusion -}
+  g . F ((a . id) /_\ (b . para f))  = g . F (fold h /_\ para f)
+<=> {- identity -}
+  g . F (a /_\ (b . para f))         = g . F (fold h /_\ para f)
 \end{spec}
 
 Now we can clearly satisfy this by setting |a| to be |fold h| and
 choosing |id| for |b|:
 
 \begin{spec}
-  g . F (a /_\ (b . para f)) = g . F (fold h /_\ para f)
-  <=> {- definition of a and b -}
-  g . F (fold h /_\ (id . para f)) = g . F (fold h /_\ para f)
-  <=> {- identity -}
-  g . F (fold h /_\ para f) = g . F (fold h /_\ para f)
+  g . F (a /_\ (b . para f))        = g . F (fold h /_\ para f)
+<=> {- definition of a and b -}
+  g . F (fold h /_\ (id . para f))  = g . F (fold h /_\ para f)
+<=> {- identity -}
+  g . F (fold h /_\ para f)         = g . F (fold h /_\ para f)
 \end{spec}
 
 In summary, we obtain the following theorem:
@@ -62,13 +62,13 @@ Similarly, we can (trivially) use a zygomorphism instead of a paramorphism:
   We compute:
   \begin{spec}
     zygo g h . in = f . F(id /_\ zygo g h)
-    <=> {- universal property of zygomorphisms -}
+  <=> {- universal property of zygomorphisms -}
     g . F(fold h /_\ zygo g h) = f . F(id /_\ zygo g h)
-    <=> {- definitions of g and h -}
+  <=> {- definitions of g and h -}
     f . F(fold in /_\ zygo f in) = f . F(id /_\ zygo f in)
-    <=> {- reflection -}
+  <=> {- reflection -}
     f . F(id /_\ zygo f in) = f . F(id /_\ zygo f in)
-    <=> {- reflexivity -}
+  <=> {- reflexivity -}
     true
   \end{spec}
 \end{proof}
@@ -87,12 +87,12 @@ is given as an argument.
 We first translate zygomorphisms to Haskell:
 
 \begin{code}
-zygo :: (a -> t1 -> t1)
-     -> t1
-     -> (a -> t -> t1 -> t)
-     -> t
-     -> [a]
-     -> t
+zygo  ::  (a -> t1 -> t1)
+      ->  t1
+      ->  (a -> t -> t1 -> t)
+      ->  t
+      ->  [a]
+      ->  t
 zygo h hz g gz [] = gz
 zygo h hz g gz (x : xs) = g x (zygo h hz g gz xs) (foldr h hz xs)
 \end{code}
@@ -101,10 +101,10 @@ This allows us to define |safeTail| as follows:
 
 \begin{code}
 safeTail = zygo h hz g gz
-  where h = (:)
-        hz = []
-        gz = []
-        g _ _ t = t
+  where  h = (:)
+         hz = []
+         gz = []
+         g _ _ t = t
 \end{code}
 
 \subsubsection{Checking a list for duplicates}
