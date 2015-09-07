@@ -29,7 +29,7 @@
 \newcommand{\cross}[2]{#1\!\times{}\!#2}
 \newcommand{\case}[2]{#1 \mathop{\triangledown{}} #2}
 \newcommand{\either}[2]{#1\!+\!#2}
-\newcommand{\inalg}[0]{\mathbf{in}}
+\newcommand{\inalg}[0]{\Varid{in}}
 \newcommand{\fold}[1]{\mathrm{fold}\,#1}
 %include polycode.fmt
 
@@ -39,8 +39,9 @@
 %format fold f = "\fold{" f "}"
 
 %format Bool  = "\mathsf{Bool}"
-%format True  = "\mathbf{True}"
-%format False = "\mathbf{False}"
+
+% %format True  = "\mathbf{True}"
+% %format False = "\mathbf{False}"
 
 %format Nat  = "\mathbb{N}"
 %format Zero = "\mathbf{0}"

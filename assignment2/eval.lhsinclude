@@ -28,7 +28,7 @@ zygomorphism.
 
 Consider the functor |E X = Int + 1 + X * X| which describes the
 structure of arithmetic expressions. The initial algebra for this
-functor is |in = Const \_/ Var \_/ Add|.\footnote{Since |(A+B)+C| and
+functor is |inalg = Const \_/ Var \_/ Add|.\footnote{Since |(A+B)+C| and
   |A+(B+C)| are isomorphic, we treat |A+B+C| as having three injection
   functions.}
 
@@ -52,10 +52,10 @@ Let us write |h = const True \_/ False \_/ (&&)| as a shorthand for the |vf|
 \begin{spec}
   opt :: mu E -> mu E
   opt = zygo (g, h)
-    where g = Const \_/ Var \_/ optimise
-          optimise ((b1,ox),(b2,oy)) =
-	  	   if b1 && b2  then Const (eval (Add ox oy) 0)
-		                else Add ox oy
+    where  g = Const \_/ Var \_/ optimise
+           optimise ((b1,ox),(b2,oy)) =
+                    if b1 && b2  then Const (eval (Add ox oy) 0)
+                                 else Add ox oy
 \end{spec}
 
 Note that, in the first equation of |optimise|, we know from |vf =
