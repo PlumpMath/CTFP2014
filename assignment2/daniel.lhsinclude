@@ -5,11 +5,11 @@ paramorphisms. In fact, every paramorphism can be expressed by a
 zygomorphism and vice versa.
 
 To express a zygomorphism as a paramorphism, it suffices to
-find an |f| such that |para f . in = g . F (fold h /_\ para f)|, by
+find an |f| such that |para f . inalg = g . F (fold h /_\ para f)|, by
 the universal property of zygomorphisms. To find this |f|, we compute:
 
 \begin{spec}
-  para f . in  = g . F (fold h /_\ para f)
+  para f . inalg  = g . F (fold h /_\ para f)
 <=> {- universal property of paramorphisms -}
   f . F (id /_\ para f) = g . F (fold h /_\ para f)
 \end{spec}
@@ -51,23 +51,23 @@ Similarly, we can (trivially) use a zygomorphism instead of a paramorphism:
 
 \begin{theorem}
   For every paramorphism |para f| it holds that
-  |para f = zygo g h| for |g = f| and |h = in|.
+  |para f = zygo g h| for |g = f| and |h = inalg|.
 \end{theorem}
 
 \begin{proof}
   By the universal property of paramorphisms, it is enough to show that
-  |zygo g h . in = f . F(id /_\ zygo g h)|. Since this paramorphisms are unique
+  |zygo g h . inalg = f . F(id /_\ zygo g h)|. Since this paramorphisms are unique
   (up to isomorphism), it must then hold that |para f = zygo g h|.
 
   We compute:
   \begin{spec}
-    zygo g h . in = f . F(id /_\ zygo g h)
+    zygo g h . inalg = f . F(id /_\ zygo g h)
   <=> {- universal property of zygomorphisms -}
     g . F(fold h /_\ zygo g h) = f . F(id /_\ zygo g h)
   <=> {- definitions of g and h -}
-    f . F(fold in /_\ zygo f in) = f . F(id /_\ zygo f in)
+    f . F(fold inalg /_\ zygo f inalg) = f . F(id /_\ zygo f inalg)
   <=> {- reflection -}
-    f . F(id /_\ zygo f in) = f . F(id /_\ zygo f in)
+    f . F(id /_\ zygo f inalg) = f . F(id /_\ zygo f inalg)
   <=> {- reflexivity -}
     true
   \end{spec}

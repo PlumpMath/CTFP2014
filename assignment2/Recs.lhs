@@ -37,8 +37,6 @@
 %%format Mu F  = "\mu{}" F
 %format inalg  = "\inalg"
 %format fold f = "\fold{" f "}"
-% Avoid treating "in" as a keyword
-%format in = "\Varid{in}"
 
 %format Bool  = "\mathsf{Bool}"
 

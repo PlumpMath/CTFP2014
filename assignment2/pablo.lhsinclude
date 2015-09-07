@@ -5,7 +5,7 @@
   B|, we define a \emph{zygomorphism} over |g| and |h| as the arrow
   |f| with the following universal property:
 
-> f . in = g . F (fold h /_\ f)
+> f . inalg = g . F (fold h /_\ f)
 
 \end{definition}
 
@@ -15,15 +15,15 @@ pair of arrows |g| and |h|.
 We compute:
 
 \begin{spec}
-  f . in = g . F (fold h /_\ f)
+  f . inalg = g . F (fold h /_\ f)
 <=> {- equality of pairs -}
-  (h . F (fold h))  /_\ (f . in)  = (h . F (fold h))                /_\  (g . F (fold h /_\ f))
+  (h . F (fold h))  /_\ (f . inalg)  = (h . F (fold h))                /_\  (g . F (fold h /_\ f))
 <=> {- universal property of |fold h| -}
-  (fold h . in)     /_\ (f . in)  = (h . F (fold h))                /_\  (g . F (fold h /_\ f))
+  (fold h . inalg)  /_\ (f . inalg)  = (h . F (fold h))                /_\  (g . F (fold h /_\ f))
 <=> {- functor, universal property of |/_\| -}
-  (fold h . in)     /_\ (f . in)  = (h . F fst . F (fold h /_\ f))  /_\  (g . F (fold h /_\ f))
+  (fold h . inalg)  /_\ (f . inalg)  = (h . F fst . F (fold h /_\ f))  /_\  (g . F (fold h /_\ f))
 <=> {- |/_\| fusion -}
-  (fold h /_\ f). in = ((h . F fst) /_\  g) . F (fold h /_\ f)
+  (fold h /_\ f). inalg = ((h . F fst) /_\  g) . F (fold h /_\ f)
 <=> {- universal property of |fold h /_\ f| -}
   fold h /_\ f = fold ((h . F fst) /_\  g)
 <=> {- universal property of |/_\| -}
